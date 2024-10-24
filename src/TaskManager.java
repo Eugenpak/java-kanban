@@ -26,18 +26,6 @@ public class TaskManager {
                 '}';
     }
 
-    public HashMap<Integer, Task> getMapTask() {
-        return mapTask;
-    }
-
-    public HashMap<Integer, Epic> getMapEpic() {
-        return mapEpic;
-    }
-
-    public HashMap<Integer, Subtask> getMapSubtask() {
-        return mapSubtask;
-    }
-
     public List<Task> getListTask() {
         List<Task> list = new ArrayList<>(mapTask.values());
         return list;
