@@ -13,21 +13,18 @@ public class Epic extends Task{
 
     public Epic(Epic epic) {
         super(epic.getName(), epic.getDescription(), epic.getStatus());
-        ArrayList<Subtask> newArraySubtask = new ArrayList<>();
-        arraySubtask = newArraySubtask;
+        arraySubtask = new ArrayList<>();
     }
 
     public Epic(Epic epic, boolean newEpicId) {
         super(epic.getName(), epic.getDescription(), epic.getStatus());
         if (newEpicId) {
-            ArrayList<Subtask> newArraySubtask = new ArrayList<Subtask>();
+            arraySubtask = new ArrayList<>();
             for (Subtask elem : epic.getArraySubtask()){
-                Subtask st;
-                newArraySubtask.add(st = new Subtask(elem));
-                //Subtask st = newArraySubtask.getLast();
-                st.setEpicId(this.getId());
+                Subtask st = new Subtask(elem);
+                st.setEpicId(epic.getId());
+                arraySubtask.add(st);
             }
-            arraySubtask = newArraySubtask;
         } else {
             this.setId(epic.getId());
             this.setArraySubtask(epic.getArraySubtask());

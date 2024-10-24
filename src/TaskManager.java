@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import service.Status;
+
 
 public class TaskManager {
     private static int idCounter;
@@ -27,23 +27,19 @@ public class TaskManager {
     }
 
     public List<Task> getListTask() {
-        List<Task> list = new ArrayList<>(mapTask.values());
-        return list;
+        return new ArrayList<>(mapTask.values());
     }
 
     public List<Epic> getListEpic() {
-        List<Epic> list = new ArrayList<>(mapEpic.values());
-        return list;
+        return new ArrayList<>(mapEpic.values());
     }
 
     public List<Subtask> getListSubtask() {
-        List<Subtask> list = new ArrayList<>(mapSubtask.values());
-        return list;
+        return new ArrayList<>(mapSubtask.values());
     }
 
     public List<Subtask> getEpicSubtasks(int epicId){
-        List<Subtask> list = new ArrayList<>(mapEpic.get(epicId).getArraySubtask());
-        return list;
+        return new ArrayList<>(mapEpic.get(epicId).getArraySubtask());
     }
 
     public Task getTaskById(Integer id) {
