@@ -19,19 +19,6 @@ public class TaskManager {
         return idCounter++;
     }
 
-    public void initTaskManager() throws ClassNotFoundException {
-
-    }
-
-    public void printTaskManager(){
-        for (Integer elem : mapTask.keySet()){
-            System.out.print("key = " + elem);
-            System.out.print(" {" + mapTask.get(elem));
-            System.out.println("}");
-        }
-    }
-
-
     @Override
     public String toString() {
         return "TaskManager{" +
