@@ -18,7 +18,7 @@ public class Main {
         taskManager.addNewSubtask(new Subtask("name S3", "description S3", Status.NEW, epicId));
         taskManager.updateEpic(epic);
 
-        taskManager.printAllTasks();
+        printAllTasks(taskManager);
         System.out.println();
         taskManager.getSubtaskById(3).setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask((taskManager.getSubtaskById(3)));
@@ -29,11 +29,24 @@ public class Main {
         taskManager.deleteSubtask(3);
         taskManager.deleteTask(0);
         taskManager.deleteEpic(5);
-        taskManager.printAllTasks();
+        printAllTasks(taskManager);
         Epic ep = new Epic(taskManager.getEpicById(2),true);
         taskManager.addNewEpic(ep);
         taskManager.getSubtaskById(8).setStatus(Status.IN_PROGRESS);
         taskManager.updateEpic(ep);
-        taskManager.printAllTasks();
+        printAllTasks(taskManager);
+    }
+    public static void printAllTasks(TaskManager taskManager) {
+        System.out.println("Печать полного списка задач");
+        for (Task elem : taskManager.getListTask()){
+            System.out.println(elem);
+        }
+        for (Epic elem : taskManager.getListEpic()){
+            taskManager.printEpicSubtask(elem.getId());
+        }
+        for (Subtask elem : taskManager.getListSubtask()){
+            System.out.println(elem);
+        }
+        System.out.println();
     }
 }

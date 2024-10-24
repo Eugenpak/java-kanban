@@ -137,20 +137,6 @@ public class TaskManager {
         return id;
     }
 
-    public void printAllTasks() {
-        System.out.println("Печать полного списка задач");
-        for (Task elem : getListTask()){
-            System.out.println(elem);
-        }
-        for (Epic elem : getListEpic()){
-            printEpicSubtask(elem.getId());
-        }
-        for (Subtask elem : getListSubtask()){
-            System.out.println(elem);
-        }
-        System.out.println();
-    }
-
     public void clearTaskManager() {
         mapTask.clear();
         mapSubtask.clear();
