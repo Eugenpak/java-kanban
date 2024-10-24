@@ -11,7 +11,7 @@ public class Task {
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
-        id = TaskManager.getIdCounter();
+        //id = TaskManager.getIdCounter();
         this.status = status;
     }
 
@@ -50,11 +50,11 @@ public class Task {
                 '}';
     }
 
-    public void setStatus(Status status) throws ClassNotFoundException {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
-    public Status getStatus() throws ClassNotFoundException {
+    public Status getStatus() {
         return status;
     }
 

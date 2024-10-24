@@ -9,14 +9,13 @@ public class Subtask extends Task{
     public Subtask() {
     }
 
-    public Subtask(Subtask subtask) throws ClassNotFoundException {
+    public Subtask(Subtask subtask) {
         super(subtask.getName(), subtask.getDescription(), subtask.getStatus());
         this.epicId = subtask.getEpicId();
     }
 
     @Override
     public String toString() {
-        try {
             return "Subtask{" +
                     "id=" + super.getId() +
                     ", name='" + this.getName() + '\'' +
@@ -24,17 +23,14 @@ public class Subtask extends Task{
                     ", status=" + super.getStatus() +
                     ", epicId=" + epicId +
                     '}';
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
-    public void setStatus(Status status) throws ClassNotFoundException {
+    public void setStatus(Status status) {
         super.setStatus(status);
     }
 
-    public void update(Epic epic) throws ClassNotFoundException {
+    public void update(Epic epic) {
         if (!(epic==null)) {
             epic.updateStatus();
         }
@@ -48,7 +44,7 @@ public class Subtask extends Task{
         this.epicId = epicId;
     }
 
-    public Subtask copySubtask() throws ClassNotFoundException {
+    public Subtask copySubtask() {
         Subtask subtask = new Subtask();
         subtask.setName(this.getName());
         subtask.setDescription(this.getDescription());

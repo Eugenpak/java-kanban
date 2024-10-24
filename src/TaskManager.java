@@ -66,7 +66,7 @@ public class TaskManager {
         return null;
     }
 
-    public boolean updateTask(Task task) throws ClassNotFoundException {
+    public boolean updateTask(Task task) {
         if (task!=null ) {
             mapTask.put(task.getId(), task);
             return true;
@@ -74,7 +74,7 @@ public class TaskManager {
         return false;
     }
 
-    public boolean updateEpic(Epic epic) throws ClassNotFoundException {
+    public boolean updateEpic(Epic epic) {
         if (epic!=null ) {
             mapEpic.put(epic.getId(),epic);
             epic.updateStatus();
@@ -83,7 +83,7 @@ public class TaskManager {
         return false;
     }
 
-    public boolean updateSubtask(Subtask subtask) throws ClassNotFoundException {
+    public boolean updateSubtask(Subtask subtask) {
         if (subtask!=null ) {
             mapSubtask.put(subtask.getId(),subtask);
             Epic epic= mapEpic.get(subtask.getEpicId());
@@ -93,7 +93,7 @@ public class TaskManager {
         return false;
     }
 
-    public void printEpicSubtask(Integer idEpic) throws ClassNotFoundException {
+    public void printEpicSubtask(Integer idEpic) {
         Epic epic = getEpicById(idEpic);
 
         System.out.println("Epic{id=" + epic.getId() + ", name='" + epic.getName() +
@@ -104,29 +104,40 @@ public class TaskManager {
         }
     }
     public int addNewTask(Task task){
-        mapTask.put(task.getId(),task);
-        return task.getId();
+        //mapTask.put(task.getId(),task);
+        final int id = idCounter++;
+        task.setId(id);
+        mapTask.put(id, task);
+        return id;
     }
 
-    public int addNewEpic(Epic epic) throws ClassNotFoundException {
-        mapEpic.put(epic.getId(),epic);
+    public int addNewEpic(Epic epic) {
+        final int id = idCounter++;
+        epic.setId(id);
+        mapEpic.put(id,epic);
+        //ArrayList<Subtask> newArraySubtask = new ArrayList<>();
         for (Subtask elem : epic.getArraySubtask()) {
-            mapSubtask.put(elem.getId(),elem);
+            //mapSubtask.put(elem.getId(),elem);
+
+            addNewSubtask(elem);
+            elem.setEpicId(id);
         }
-        return epic.getId();
+        return id;
     }
 
-    public int addNewSubtask(Subtask subtask) throws ClassNotFoundException {
-        mapSubtask.put(subtask.getId(),subtask);
+    public int addNewSubtask(Subtask subtask) {
+        final int id = idCounter++;
+        subtask.setId(id);
+        mapSubtask.put(id,subtask);
         Epic epic= mapEpic.get(subtask.getEpicId());
         if (epic!=null) {
             epic.getArraySubtask().add(subtask);
             epic.updateStatus();
         }
-        return subtask.getId();
+        return id;
     }
 
-    public void printAllTasks() throws ClassNotFoundException {
+    public void printAllTasks() {
         System.out.println("Печать полного списка задач");
         for (Task elem : getListTask()){
             System.out.println(elem);
@@ -162,7 +173,7 @@ public class TaskManager {
         }
     }
 
-    public void deleteSubtask(int id) throws ClassNotFoundException {
+    public void deleteSubtask(int id) {
         Subtask subtask=getSubtaskById(id);
         if (subtask!=null) {
             Epic epic=getEpicById(subtask.getEpicId());
@@ -183,5 +194,4 @@ public class TaskManager {
     public void deleteSubtasks() {
         mapSubtask.clear();
     }
-
 }

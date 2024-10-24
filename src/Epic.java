@@ -11,13 +11,13 @@ public class Epic extends Task{
         arraySubtask = new ArrayList<>();
     }
 
-    public Epic(Epic epic) throws ClassNotFoundException {
+    public Epic(Epic epic) {
         super(epic.getName(), epic.getDescription(), epic.getStatus());
         ArrayList<Subtask> newArraySubtask = new ArrayList<>();
         arraySubtask = newArraySubtask;
     }
 
-    public Epic(Epic epic, boolean newEpicId) throws ClassNotFoundException {
+    public Epic(Epic epic, boolean newEpicId) {
         super(epic.getName(), epic.getDescription(), epic.getStatus());
         if (newEpicId) {
             ArrayList<Subtask> newArraySubtask = new ArrayList<Subtask>();
@@ -32,13 +32,10 @@ public class Epic extends Task{
             this.setId(epic.getId());
             this.setArraySubtask(epic.getArraySubtask());
         }
-    } //*/
-
-
+    }
 
     @Override
     public String toString() {
-        try {
             return "Epic{" +
                     "Id=" + super.getId() +
                     ", name='" + super.getName() + '\'' +
@@ -46,19 +43,11 @@ public class Epic extends Task{
                     ", status=" + super.getStatus() +
                     ", arraySubtask: " + arraySubtask +
                     "}";
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
-    public Status getStatus() throws ClassNotFoundException {
+    public Status getStatus() {
         return super.getStatus();
-    }
-
-    @Override
-    public void setStatus(Status status) throws ClassNotFoundException {
-        super.setStatus(status);
     }
 
     public ArrayList<Subtask> getArraySubtask() {
@@ -69,7 +58,7 @@ public class Epic extends Task{
         this.arraySubtask = arraySubtask;
     }
 
-    public Status updateStatus() throws ClassNotFoundException {
+    public Status updateStatus() {
         if (arraySubtask.size()==0) {
             super.setStatus(Status.NEW);
             return getStatus();

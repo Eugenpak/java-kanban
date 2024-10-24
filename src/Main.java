@@ -2,7 +2,7 @@ import service.Status;
 
 public class Main {
 
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) {
         System.out.println("Поехали!");
         TaskManager taskManager = new TaskManager();
         //taskManager.initTaskManager();
@@ -18,9 +18,6 @@ public class Main {
         taskManager.addNewSubtask(new Subtask("name S3", "description S3", Status.NEW, epicId));
         taskManager.updateEpic(epic);
 
-
-
-
         taskManager.printAllTasks();
         System.out.println();
         taskManager.getSubtaskById(3).setStatus(Status.IN_PROGRESS);
@@ -35,6 +32,8 @@ public class Main {
         taskManager.printAllTasks();
         Epic ep = new Epic(taskManager.getEpicById(2),true);
         taskManager.addNewEpic(ep);
+        taskManager.getSubtaskById(8).setStatus(Status.IN_PROGRESS);
+        taskManager.updateEpic(ep);
         taskManager.printAllTasks();
     }
 }
