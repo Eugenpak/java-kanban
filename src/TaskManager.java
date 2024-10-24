@@ -20,17 +20,7 @@ public class TaskManager {
     }
 
     public void initTaskManager() throws ClassNotFoundException {
-        addNewTask(new Task("name 1", "description 1", Status.NEW));
-        addNewTask(new Task("name 2", "description 2", Status.NEW));
-        Epic epic = new Epic("name E1", "description E1", Status.NEW);
-        int epicId = addNewEpic(epic);
-        addNewSubtask(new Subtask("name S1", "description S1", Status.NEW, epicId));
-        addNewSubtask(new Subtask("name S2", "description S2", Status.NEW, epicId));
-        updateEpic(epic);
-        epic = new Epic("name E2", "description E2", Status.NEW);
-        epicId = addNewEpic(epic);
-        addNewSubtask(new Subtask("name S3", "description S3", Status.NEW, epicId));
-        updateEpic(epic);
+
     }
 
     public void printTaskManager(){

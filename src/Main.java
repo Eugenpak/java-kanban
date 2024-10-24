@@ -5,7 +5,21 @@ public class Main {
     public static void main(String[] args) throws ClassNotFoundException {
         System.out.println("Поехали!");
         TaskManager taskManager = new TaskManager();
-        taskManager.initTaskManager();
+        //taskManager.initTaskManager();
+        taskManager.addNewTask(new Task("name 1", "description 1", Status.NEW));
+        taskManager.addNewTask(new Task("name 2", "description 2", Status.NEW));
+        Epic epic = new Epic("name E1", "description E1", Status.NEW);
+        int epicId = taskManager.addNewEpic(epic);
+        taskManager.addNewSubtask(new Subtask("name S1", "description S1", Status.NEW, epicId));
+        taskManager.addNewSubtask(new Subtask("name S2", "description S2", Status.NEW, epicId));
+        taskManager.updateEpic(epic);
+        epic = new Epic("name E2", "description E2", Status.NEW);
+        epicId = taskManager.addNewEpic(epic);
+        taskManager.addNewSubtask(new Subtask("name S3", "description S3", Status.NEW, epicId));
+        taskManager.updateEpic(epic);
+
+
+
 
         taskManager.printAllTasks();
         System.out.println();
