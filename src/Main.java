@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
         TaskManager taskManager = new TaskManager();
-        //taskManager.initTaskManager();
+
         taskManager.addNewTask(new Task("name 1", "description 1", Status.NEW));
         taskManager.addNewTask(new Task("name 2", "description 2", Status.NEW));
         Epic epic = new Epic("name E1", "description E1", Status.NEW);
@@ -34,6 +34,10 @@ public class Main {
         taskManager.addNewEpic(ep);
         taskManager.getSubtaskById(8).setStatus(Status.IN_PROGRESS);
         taskManager.updateEpic(ep);
+        taskManager.deleteSubtasks();
+        printAllTasks(taskManager);
+        taskManager.deleteEpics();
+        taskManager.deleteTasks();
         printAllTasks(taskManager);
     }
     public static void printAllTasks(TaskManager taskManager) {

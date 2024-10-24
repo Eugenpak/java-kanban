@@ -137,12 +137,6 @@ public class TaskManager {
         return id;
     }
 
-    public void clearTaskManager() {
-        mapTask.clear();
-        mapSubtask.clear();
-        mapEpic.clear();
-    }
-
     public void deleteTask(int id) {
         if (getTaskById(id)!=null) {
             mapTask.remove(id);
@@ -175,9 +169,14 @@ public class TaskManager {
 
     public void deleteEpics() {
         mapEpic.clear();
+        mapSubtask.clear();
     }
 
     public void deleteSubtasks() {
+        for (Epic elem : getListEpic()){
+            elem.getArraySubtask().clear();
+            updateEpic(elem);
+        }
         mapSubtask.clear();
     }
 }
