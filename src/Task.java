@@ -11,7 +11,6 @@ public class Task {
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
-        //id = TaskManager.getIdCounter();
         this.status = status;
     }
 
@@ -22,7 +21,7 @@ public class Task {
         this.status = task.status;
     }
     public Task() {
-        this.id = TaskManager.getIdCounter();
+
     }
 
     public Task(String name, String description, int id, Status status) {
