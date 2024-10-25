@@ -1,3 +1,9 @@
+package controllers;
+
+import model.Epic;
+import model.Subtask;
+import model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -6,8 +12,8 @@ import java.util.List;
 public class TaskManager {
     private static int idCounter;
     private HashMap<Integer,Task> mapTask;
-    private HashMap<Integer,Epic> mapEpic;
-    private HashMap<Integer,Subtask> mapSubtask;
+    private HashMap<Integer, Epic> mapEpic;
+    private HashMap<Integer, Subtask> mapSubtask;
 
     public TaskManager() {
         mapTask = new HashMap<>();
@@ -21,8 +27,10 @@ public class TaskManager {
 
     @Override
     public String toString() {
-        return "TaskManager{" +
-                "mapTask=" + //mapTask +
+        return "controllers.TaskManager{" +
+                "mapTask=" + mapTask +
+                "mapEpic=" + mapEpic +
+                "mapSubtask=" + mapSubtask +
                 '}';
     }
 
@@ -89,16 +97,6 @@ public class TaskManager {
         return false;
     }
 
-    public void printEpicSubtask(Integer idEpic) {
-        Epic epic = getEpicById(idEpic);
-
-        System.out.println("Epic{id=" + epic.getId() + ", name='" + epic.getName() +
-                "', description.length =" + epic.getDescription().length() +
-                ", status='" + epic.getStatus() + "' ArraySubtask[" + epic.getArraySubtask().size() + "]}");
-        for (Subtask elem : getEpicSubtasks(idEpic)){
-            System.out.println(" --> " + elem);
-        }
-    }
     public int addNewTask(Task task){
         //mapTask.put(task.getId(),task);
         final int id = idCounter++;
@@ -111,10 +109,7 @@ public class TaskManager {
         final int id = idCounter++;
         epic.setId(id);
         mapEpic.put(id,epic);
-        //ArrayList<Subtask> newArraySubtask = new ArrayList<>();
         for (Subtask elem : epic.getArraySubtask()) {
-            //mapSubtask.put(elem.getId(),elem);
-
             addNewSubtask(elem);
             elem.setEpicId(id);
         }

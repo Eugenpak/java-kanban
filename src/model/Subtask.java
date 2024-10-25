@@ -1,5 +1,7 @@
+package model;
+
 import service.Status;
-public class Subtask extends Task{
+public class Subtask extends Task {
     private int epicId;
 
     public Subtask(String name, String description, Status status, int epicId) {

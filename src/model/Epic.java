@@ -1,7 +1,9 @@
+package model;
+
 import java.util.ArrayList;
 import service.Status;
 
-public class Epic extends Task{
+public class Epic extends Task {
     private ArrayList<Subtask> arraySubtask;
 
     public Epic() {
@@ -61,7 +63,7 @@ public class Epic extends Task{
             return getStatus();
         }
         Status temp=Status.NEW;
-        for (Subtask  subtask : arraySubtask){
+        for (Subtask subtask : arraySubtask){
             if (!(subtask.getStatus()==Status.NEW)){
                 temp=subtask.getStatus();
                 break;
@@ -72,7 +74,7 @@ public class Epic extends Task{
             return getStatus();
         }
         temp=Status.DONE;
-        for (Subtask  subtask : arraySubtask){
+        for (Subtask subtask : arraySubtask){
             if (!(subtask.getStatus()==Status.DONE)){
                 temp=subtask.getStatus();
                 break;

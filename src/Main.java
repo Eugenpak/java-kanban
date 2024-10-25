@@ -1,3 +1,7 @@
+import controllers.TaskManager;
+import model.Epic;
+import model.Subtask;
+import model.Task;
 import service.Status;
 
 public class Main {
@@ -46,11 +50,22 @@ public class Main {
             System.out.println(elem);
         }
         for (Epic elem : taskManager.getListEpic()){
-            taskManager.printEpicSubtask(elem.getId());
+            printEpicSubtask(taskManager,elem.getId());
         }
         for (Subtask elem : taskManager.getListSubtask()){
             System.out.println(elem);
         }
         System.out.println();
+    }
+
+    public static void printEpicSubtask(TaskManager taskManager, Integer idEpic) {
+        Epic epic = taskManager.getEpicById(idEpic);
+
+        System.out.println("Epic{id=" + epic.getId() + ", name='" + epic.getName() +
+                "', description.length =" + epic.getDescription().length() +
+                ", status='" + epic.getStatus() + "' ArraySubtask[" + epic.getArraySubtask().size() + "]}");
+        for (Subtask elem : taskManager.getEpicSubtasks(idEpic)){
+            System.out.println(" --> " + elem);
+        }
     }
 }
