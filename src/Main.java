@@ -1,44 +1,78 @@
+import controllers.InMemoryHistoryManager;
+import controllers.InMemoryTaskManager;
 import controllers.TaskManager;
 import model.Epic;
 import model.Subtask;
 import model.Task;
 import service.Status;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = new InMemoryTaskManager();
+        //InMemoryHistoryManager historyMan = new InMemoryHistoryManager();
+        List<Task> arrList;
 
-        taskManager.addNewTask(new Task("name 1", "description 1", Status.NEW));
-        taskManager.addNewTask(new Task("name 2", "description 2", Status.NEW));
+        Task task = new Task("name 1", "description 1", Status.NEW);
+        taskManager.addNewTask(task);
+        //historyMan.add(task);
+        task = new Task("name 2", "description 2", Status.NEW);
+        taskManager.addNewTask(task);
+        //historyMan.add(task);
         Epic epic = new Epic("name E1", "description E1");
         int epicId = taskManager.addNewEpic(epic);
-        taskManager.addNewSubtask(new Subtask("name S1", "description S1", Status.NEW, epicId));
-        taskManager.addNewSubtask(new Subtask("name S2", "description S2", Status.NEW, epicId));
+        Subtask subtask = new Subtask("name S1", "description S1", Status.NEW, epicId);
+        taskManager.addNewSubtask(subtask);
+        //historyMan.add(subtask);
+        subtask = new Subtask("name S2", "description S2", Status.NEW, epicId);
+        taskManager.addNewSubtask(subtask);
+        //historyMan.add(subtask);
         taskManager.updateEpic(epic);
+        //historyMan.add(epic);
         epic = new Epic("name E2", "description E2");
         epicId = taskManager.addNewEpic(epic);
-        taskManager.addNewSubtask(new Subtask("name S3", "description S3", Status.NEW, epicId));
+        subtask = new Subtask("name S3", "description S3", Status.NEW, epicId);
+        taskManager.addNewSubtask(subtask);
+        //historyMan.add(subtask);
         taskManager.updateEpic(epic);
+        //historyMan.add(epic);
+        arrList = taskManager.getHistory();
 
         printAllTasks(taskManager);
         System.out.println();
-        taskManager.getSubtaskById(3).setStatus(Status.IN_PROGRESS);
+        subtask = taskManager.getSubtaskById(3);
+        subtask.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask((taskManager.getSubtaskById(3)));
-        taskManager.getSubtaskById(4).setStatus(Status.DONE);
-        taskManager.updateSubtask((taskManager.getSubtaskById(4)));
-        taskManager.getTaskById(1).setStatus(Status.IN_PROGRESS);
-        taskManager.updateTask(taskManager.getTaskById(1));
+        arrList = taskManager.getHistory();
+        //historyMan.add(subtask);
+        subtask = taskManager.getSubtaskById(4);
+        subtask.setStatus(Status.DONE);
+
+        taskManager.updateSubtask(subtask);
+        //historyMan.add(subtask);
+        task=taskManager.getTaskById(1);
+        task.setStatus(Status.IN_PROGRESS);
+        taskManager.updateTask(task);
+        //historyMan.add(subtask);
         taskManager.deleteSubtask(3);
         taskManager.deleteTask(0);
         taskManager.deleteEpic(5);
         printAllTasks(taskManager);
         Epic ep = new Epic(taskManager.getEpicById(2),true);
         taskManager.addNewEpic(ep);
-        taskManager.getSubtaskById(8).setStatus(Status.IN_PROGRESS);
+        //historyMan.add(ep);
+        arrList = taskManager.getHistory();
+        subtask =taskManager.getSubtaskById(8);
+        subtask.setStatus(Status.IN_PROGRESS);
+        //historyMan.add(subtask);
         taskManager.updateEpic(ep);
+        arrList = taskManager.getHistory();
         taskManager.deleteSubtasks();
+        arrList = taskManager.getHistory();
         printAllTasks(taskManager);
         taskManager.deleteEpics();
         taskManager.deleteTasks();
