@@ -14,13 +14,14 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer,Task> mapTask;
     private HashMap<Integer, Epic> mapEpic;
     private HashMap<Integer, Subtask> mapSubtask;
+
     private HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         mapTask = new HashMap<>();
         mapEpic = new HashMap<>();
         mapSubtask = new HashMap<>();
-        historyManager= new InMemoryHistoryManager();
+        historyManager= Managers.getDefaultHistory();
     }
 
     static int getIdCounter() {

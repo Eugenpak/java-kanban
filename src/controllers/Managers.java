@@ -3,14 +3,18 @@ package controllers;
 import model.Task;
 
 public final class Managers {
-    private static TaskManager taskManager = new InMemoryTaskManager();
-
+    private final static TaskManager taskManager;// = new InMemoryTaskManager();
+    private final static HistoryManager historyManager;// = new InMemoryHistoryManager();
+    static {
+        historyManager = new InMemoryHistoryManager();
+        taskManager = new InMemoryTaskManager();
+    }
     public static TaskManager getDefault() {
         return taskManager;
     }
 
     public static HistoryManager getDefaultHistory() {
-        return (HistoryManager) taskManager.getHistory();
+        return historyManager;
     }
     private static void printAllTasks(TaskManager manager) {
         System.out.println("Задачи:");

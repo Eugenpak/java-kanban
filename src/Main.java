@@ -1,7 +1,4 @@
-import controllers.InMemoryHistoryManager;
-import controllers.InMemoryTaskManager;
-import controllers.Managers;
-import controllers.TaskManager;
+import controllers.*;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -16,9 +13,10 @@ public class Main {
         System.out.println("Поехали!");
 
         TaskManager taskManager = Managers.getDefault();
+        HistoryManager historyManager = Managers.getDefaultHistory();
 
         //InMemoryHistoryManager historyMan = new InMemoryHistoryManager();
-        List<Task> arrList;
+        List<Task> arrList = historyManager.getHistory();
 
         Task task = new Task("name 1", "description 1", Status.NEW);
         taskManager.addNewTask(task);
@@ -43,14 +41,14 @@ public class Main {
         //historyMan.add(subtask);
         taskManager.updateEpic(epic);
         //historyMan.add(epic);
-        arrList = taskManager.getHistory();
+        historyManager.getHistory();
 
         printAllTasks(taskManager);
         System.out.println();
         subtask = taskManager.getSubtaskById(3);
         subtask.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask(subtask);
-        arrList = taskManager.getHistory();
+        arrList = historyManager.getHistory();
         //historyMan.add(subtask);
         subtask = taskManager.getSubtaskById(4);
         subtask.setStatus(Status.DONE);
@@ -68,14 +66,14 @@ public class Main {
         Epic ep = new Epic(taskManager.getEpicById(2),true);
         taskManager.addNewEpic(ep);
         //historyMan.add(ep);
-        arrList = taskManager.getHistory();
+        arrList = historyManager.getHistory();;
         subtask =taskManager.getSubtaskById(8);
         subtask.setStatus(Status.IN_PROGRESS);
         //historyMan.add(subtask);
         taskManager.updateEpic(ep);
-        arrList = taskManager.getHistory();
+        arrList = historyManager.getHistory();
         taskManager.deleteSubtasks();
-        arrList = taskManager.getHistory();
+        arrList = historyManager.getHistory();
         printAllTasks(taskManager);
         taskManager.deleteEpics();
         taskManager.deleteTasks();
