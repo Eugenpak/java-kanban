@@ -121,7 +121,7 @@ public class InMemoryTaskManager implements TaskManager {
         final int id = idCounter++;
         task.setId(id);
         mapTask.put(id, task);
-        historyManager.add(task);
+        //historyManager.add(task);
         return id;
     }
 
@@ -134,7 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
             addNewSubtask(elem);
             elem.setEpicId(id);
         }
-        historyManager.add(epic);
+        //historyManager.add(epic);
         return id;
     }
 
@@ -148,7 +148,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.getArraySubtask().add(subtask);
             epic.updateStatus();
         }
-        historyManager.add(subtask);
+        //historyManager.add(subtask);
         return id;
     }
 
@@ -203,6 +203,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory(){
-        return historyManager.getHistory(); // временно!
+        return historyManager.getHistory(); // внимание!
     }
 }

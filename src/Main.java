@@ -1,5 +1,6 @@
 import controllers.InMemoryHistoryManager;
 import controllers.InMemoryTaskManager;
+import controllers.Managers;
 import controllers.TaskManager;
 import model.Epic;
 import model.Subtask;
@@ -13,7 +14,9 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-        TaskManager taskManager = new InMemoryTaskManager();
+
+        TaskManager taskManager = Managers.getDefault();
+
         //InMemoryHistoryManager historyMan = new InMemoryHistoryManager();
         List<Task> arrList;
 
@@ -46,7 +49,7 @@ public class Main {
         System.out.println();
         subtask = taskManager.getSubtaskById(3);
         subtask.setStatus(Status.IN_PROGRESS);
-        taskManager.updateSubtask((taskManager.getSubtaskById(3)));
+        taskManager.updateSubtask(subtask);
         arrList = taskManager.getHistory();
         //historyMan.add(subtask);
         subtask = taskManager.getSubtaskById(4);
