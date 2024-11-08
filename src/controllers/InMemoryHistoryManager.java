@@ -25,6 +25,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             copyTask = new Subtask((Subtask) task);
         } else if (task instanceof Epic){
             copyTask = new Epic((Epic) task);
+            //ArrayList<Subtask> listSubtask = ((Epic)copyTask).getArraySubtask();
         } else if (task instanceof Task){
             copyTask = new Task(task);
         }

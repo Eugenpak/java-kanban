@@ -138,7 +138,6 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             id = task.getId();
         }
-        task.setDescription(task.getDescription()+" adT ");
         mapTask.put(id, task);
         //historyManager.add(task);
         return id;
@@ -146,7 +145,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewEpic(Epic epic) {
-        final int id = idCounter++;
+        final int id;
+        if (epic.getId()<0) {
+            id = idCounter++;
+        } else {
+            id = epic.getId();
+        }
         epic.setId(id);
         mapEpic.put(id,epic);
         for (Subtask elem : epic.getArraySubtask()) {
@@ -159,7 +163,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewSubtask(Subtask subtask) {
-        final int id = idCounter++;
+        final int id;
+        if (subtask.getId()<0){
+            id = idCounter++;
+        } else {
+            id = subtask.getId();
+        }
         subtask.setId(id);
         mapSubtask.put(id,subtask);
         Epic epic= mapEpic.get(subtask.getEpicId());

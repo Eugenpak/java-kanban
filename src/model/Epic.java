@@ -15,16 +15,21 @@ public class Epic extends Task {
 
     public Epic(Epic epic) {
         super(epic.getName(), epic.getDescription(), epic.getId(),epic.getStatus());
-        arraySubtask = new ArrayList<>();
+        if (epic.getArraySubtask()==null){
+            arraySubtask = new ArrayList<>();
+        } else {
+            arraySubtask = epic.arraySubtask;
+        }
+
     }
 
     public Epic(Epic epic, boolean newEpicId) {
-        super(epic.getName(), epic.getDescription()+" cpE", epic.getStatus());
+        super(epic.getName(), epic.getDescription(), epic.getStatus());
         if (newEpicId) {
             arraySubtask = new ArrayList<>();
             for (Subtask elem : epic.getArraySubtask()){
-                Subtask st = new Subtask(elem);
-                st.setEpicId(epic.getId());
+                Subtask st = new Subtask(elem.getName(),elem.getDescription(),elem.getStatus());
+                st.setEpicId(epic.getId()); // ???
                 arraySubtask.add(st);
             }
         } else {
