@@ -11,11 +11,11 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private static int idCounter;
-    private HashMap<Integer,Task> mapTask;
-    private HashMap<Integer, Epic> mapEpic;
-    private HashMap<Integer, Subtask> mapSubtask;
+    private final HashMap<Integer,Task> mapTask;
+    private final HashMap<Integer, Epic> mapEpic;
+    private final HashMap<Integer, Subtask> mapSubtask;
 
-    private HistoryManager historyManager;
+    private final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         mapTask = new HashMap<>();
@@ -89,10 +89,22 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean updateTask(Task task) {
         if (task!=null ) {
-            mapTask.put(task.getId(), task);
+            Task copyTask = copyTask(task);
+            mapTask.put(copyTask.getId(), copyTask);
             return true;
         }
         return false;
+    }
+    private Task copyTask(Task task){
+        if (task!=null){
+            Task newTask = new Task();
+            newTask.setId(task.getId());
+            newTask.setName(task.getName());
+            newTask.setDescription(task.getDescription());
+            newTask.setStatus(task.getStatus());
+            return newTask;
+        }
+        return null;
     }
 
     @Override
@@ -119,8 +131,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addNewTask(Task task){
         //mapTask.put(task.getId(),task);
-        final int id = idCounter++;
-        task.setId(id);
+        final int id;
+        if (task.getId()<0){
+            id = idCounter++;
+            task.setId(id);
+        } else {
+            id = task.getId();
+        }
+        task.setDescription(task.getDescription()+" adT ");
         mapTask.put(id, task);
         //historyManager.add(task);
         return id;

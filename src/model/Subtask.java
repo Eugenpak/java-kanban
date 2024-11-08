@@ -12,12 +12,12 @@ public class Subtask extends Task {
     }
 
     public Subtask(Subtask subtask) {
-        super(subtask.getName(), subtask.getDescription(), subtask.getStatus());
+        super(subtask.getName(), subtask.getDescription(), subtask.getId(),subtask.getStatus());
         this.epicId = subtask.getEpicId();
     }
 
     public Subtask(String name, String description, int id,Status status, int epicId) {
-        super(name, description, status);
+        super(name, description, id, status);
         this.epicId = epicId;
     }
 

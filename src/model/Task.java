@@ -14,6 +14,7 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.id = -3;
     }
 
     public Task(Task task) {

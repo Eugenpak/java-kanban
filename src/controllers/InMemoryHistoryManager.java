@@ -1,5 +1,7 @@
 package controllers;
 
+import model.Epic;
+import model.Subtask;
 import model.Task;
 
 import java.util.ArrayList;
@@ -18,7 +20,15 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (history.size()>=10) {
             history.remove(0);
         }
-        history.add(task);
+        Task copyTask = null;
+        if (task instanceof Subtask){
+            copyTask = new Subtask((Subtask) task);
+        } else if (task instanceof Epic){
+            copyTask = new Epic((Epic) task);
+        } else if (task instanceof Task){
+            copyTask = new Task(task);
+        }
+        history.add(copyTask);
     }
 
     @Override

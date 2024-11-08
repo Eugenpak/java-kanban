@@ -14,12 +14,12 @@ public class Epic extends Task {
     }
 
     public Epic(Epic epic) {
-        super(epic.getName(), epic.getDescription(), epic.getStatus());
+        super(epic.getName(), epic.getDescription(), epic.getId(),epic.getStatus());
         arraySubtask = new ArrayList<>();
     }
 
     public Epic(Epic epic, boolean newEpicId) {
-        super(epic.getName(), epic.getDescription(), epic.getStatus());
+        super(epic.getName(), epic.getDescription()+" cpE", epic.getStatus());
         if (newEpicId) {
             arraySubtask = new ArrayList<>();
             for (Subtask elem : epic.getArraySubtask()){
