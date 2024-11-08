@@ -63,6 +63,7 @@ public class Subtask extends Task {
         subtask.setDescription(this.getDescription());
         subtask.setEpicId(this.getEpicId());
         subtask.setStatus(this.getStatus());
+        subtask.setId(this.getId());
         return subtask;
     }
 }

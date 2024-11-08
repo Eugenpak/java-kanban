@@ -26,7 +26,7 @@ class TaskTest {
     void testToString() {
         Task task = new Task("T3","DT3",3,Status.NEW);
         assertNotNull(task, "Задача не пустая.");
-        assertEquals("Task{Id=3, name='T3', description='DT3', status=NEW}",task.toString(), "Нет тот статус!");
+        assertEquals("Task{Id=3, name='T3', description='DT3', status=NEW}",task.toString(), "Не верная строка!");
     }
 
     @Test
