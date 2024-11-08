@@ -48,7 +48,7 @@ class TaskTest {
     @Test
     void test1() {
         Task task1 = new Task("name-1","des-1",1, Status.NEW);
-        Task task2 = new Task("name-1","des-2",1, Status.NEW);
+        Task task2 = new Task("name-2","des-2",1, Status.DONE);
         assertNotSame(task1,task2,"Один и тот же объект!");
         assertEquals(task1.hashCode(),task2.hashCode());
         assertEquals(task1.getId(),task2.getId());
