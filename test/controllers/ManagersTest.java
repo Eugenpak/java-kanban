@@ -31,8 +31,6 @@ class ManagersTest {
         HistoryManager historyManager = Managers.getDefaultHistory();
         List<Task> listHistory = historyManager.getHistory();
         assertNotNull(listHistory, "Задачи не возвращаются.");
-        //assertEquals(6, listHistory.size(), "Неверное количество задач.");
         assertEquals(taskManager.getHistory().size(), listHistory.size(), "Неверное количество задач.");
-
     }
 }
