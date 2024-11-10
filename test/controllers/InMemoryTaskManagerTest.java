@@ -185,6 +185,59 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void addNewTaskError() {
+        final Task task1 = new Task("name-1","des-1",5, Status.NEW);
+        final Task task2 = new Task("name-1","des-1",1, Status.NEW);
+
+        final int taskId = taskManager.addNewTask(task1);
+        taskManager.addNewTask(task2);
+        taskManager.updateTask(task1);
+        final Task savedTask = taskManager.getTaskById(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertNotEquals(5, savedTask.getId(), "Задачи не совпадают.");
+        assertNotSame(task1, savedTask);
+    }
+
+    @Test
+    void addNewTaskError2() {
+        final Epic epic3 = new Epic("E-2","DE-2",2 ,Status.NEW);
+        final Task task4 = new Task("T-3","DT-3",2, Status.NEW);
+
+        taskManager.addNewEpic(epic3);
+        taskManager.updateEpic(epic3);
+        final int task4Id = taskManager.addNewTask(task4);
+        taskManager.updateTask(task4);
+
+        final Task savedTask = taskManager.getTaskById(task4Id);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task4.getId(), taskManager.getTaskById(task4Id).getId());
+    }
+
+    @Test
+    void test7checkId(){
+        Task task = new Task("T-15","DT-15",15, Status.NEW);
+        final int taskId = taskManager.addNewTask(task);
+        taskManager.updateTask(task);
+        final Task savedTask = taskManager.getTaskById(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task, savedTask);
+    }
+
+    @Test
+    void test8checkField(){
+        Task task = new Task("T-15","DT-15", Status.NEW);
+        final int taskId = taskManager.addNewTask(task);
+        taskManager.updateTask(task);
+        final Task savedTask = taskManager.getTaskById(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task.getName(), savedTask.getName());
+        assertEquals(task.getDescription(), savedTask.getDescription());
+        assertEquals(task.getStatus(), savedTask.getStatus());
+        assertEquals(task.getId(), savedTask.getId());
+
+    }
+
+    @Test
     void addNewEpic() {
         Epic epic = new Epic("E-1","DE-1");
 
@@ -320,5 +373,20 @@ class InMemoryTaskManagerTest {
         savedSubtask.setEpicId(subtaskId);
         assertNotEquals(subtaskId, savedSubtask.getEpicId(), "Значение поля равны!");
     }
+
+    @Test
+    void test6findTask(){
+        Task task1 = new Task("name-1","des-1", Status.NEW);
+        final int taskId = taskManager.addNewTask(task1);
+        Epic epic = new Epic("E-1","DE-1");
+        final int epicId = taskManager.addNewEpic(epic);
+        Subtask subtask = new Subtask("S-1","SE-1",Status.NEW);
+        final int subtaskId = taskManager.addNewSubtask(subtask);
+
+        final Task findedTask = taskManager.findId(taskId);
+        assertNotNull(findedTask, "Задача не найдена.");
+        assertEquals(taskId, findedTask.getId(), "Значение поля не равны!");
+    }
+
 
 }

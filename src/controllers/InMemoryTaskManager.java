@@ -85,6 +85,23 @@ public class InMemoryTaskManager implements TaskManager {
         return false;
     }
 
+    public Task findId(int id){
+        Task findTask;
+        findTask = getTaskById(id);
+        if (findTask!=null) {
+            return findTask;
+        }
+        findTask = getEpicById(id);
+        if (findTask!=null) {
+            return findTask;
+        }
+        findTask = getSubtaskById(id);
+        if (findTask!=null) {
+            return findTask;
+        }
+        return null;
+    }
+
     @Override
     public Task getTaskById(Integer id) {
         if (mapTask.containsKey(id)) {
@@ -161,11 +178,14 @@ public class InMemoryTaskManager implements TaskManager {
         return false;
     }
 
+
+
     @Override
     public int addNewTask(Task task){
         //mapTask.put(task.getId(),task);
         final int id;
-        if (task.getId()<0){
+
+        if (checkIdAdd(task)){
             id = idCounter++;
             task.setId(id);
         } else {
@@ -176,10 +196,26 @@ public class InMemoryTaskManager implements TaskManager {
         return id;
     }
 
+    private boolean checkIdAdd(Task task){
+        final int id = task.getId();
+        final Task findedTask = findId(id);
+        if (id<0 || id>=idCounter ) {
+            return true; //&&  &&
+        } else if (findedTask!=null) {
+            String findedStr = findedTask.getClass().toString();
+            String str = task.getClass().toString();
+            if (!findedStr.equals(str)) {
+                // вернем true, когда 0<=task.getId()<=idCounter и тип задачи разные (task != findedTask)
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public int addNewEpic(Epic epic) {
         final int id;
-        if (epic.getId()<0) {
+        if (checkIdAdd(epic)) {
             id = idCounter++;
         } else {
             id = epic.getId();
@@ -197,7 +233,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int addNewSubtask(Subtask subtask) {
         final int id;
-        if (subtask.getId()<0){
+        if (checkIdAdd(subtask)){
             id = idCounter++;
         } else {
             id = subtask.getId();
