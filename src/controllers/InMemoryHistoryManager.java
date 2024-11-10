@@ -20,7 +20,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (history.size()>=10) {
             history.remove(0);
         }
-        Task copyTask = null;
+        final Task copyTask;
         if (task instanceof Subtask){
             copyTask = new Subtask((Subtask) task);
         } else if (task instanceof Epic){
@@ -28,6 +28,8 @@ public class InMemoryHistoryManager implements HistoryManager {
             //ArrayList<Subtask> listSubtask = ((Epic)copyTask).getArraySubtask();
         } else if (task instanceof Task){
             copyTask = new Task(task);
+        } else{
+            copyTask = null;
         }
         history.add(copyTask);
     }

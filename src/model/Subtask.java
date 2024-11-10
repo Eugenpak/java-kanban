@@ -54,11 +54,13 @@ public class Subtask extends Task {
     }
 
     public void setEpicId(int epicId) {
-        this.epicId = epicId;
+        if (super.getId() != epicId){
+            this.epicId = epicId;
+        }
     }
 
     public Subtask copySubtask() {
-        Subtask subtask = new Subtask();
+        final Subtask subtask = new Subtask();
         subtask.setName(this.getName());
         subtask.setDescription(this.getDescription());
         subtask.setEpicId(this.getEpicId());

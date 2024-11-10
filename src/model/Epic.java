@@ -4,21 +4,25 @@ import java.util.ArrayList;
 import service.Status;
 
 public class Epic extends Task {
-    private ArrayList<Subtask> arraySubtask;
+    private final ArrayList<Subtask> arraySubtask = new ArrayList<>();
 
     public Epic() {
+
     }
     public Epic(String name, String description) {
         super(name, description, Status.NEW);
-        arraySubtask = new ArrayList<>();
+        //arraySubtask = new ArrayList<>(); //--> final
     }
 
     public Epic(Epic epic) {
         super(epic.getName(), epic.getDescription(), epic.getId(),epic.getStatus());
         if (epic.getArraySubtask()==null){
-            arraySubtask = new ArrayList<>();
+            //arraySubtask = new ArrayList<>(); //--> final
         } else {
-            arraySubtask = epic.arraySubtask;
+            //arraySubtask = epic.arraySubtask; //--> final
+            for (Subtask elem : epic.getArraySubtask()){
+                this.arraySubtask.add(elem);
+            }
         }
 
     }
@@ -26,7 +30,7 @@ public class Epic extends Task {
     public Epic(Epic epic, boolean newEpicId) {
         super(epic.getName(), epic.getDescription(), epic.getStatus());
         if (newEpicId) {
-            arraySubtask = new ArrayList<>();
+            //arraySubtask = new ArrayList<>();  //--> final
             for (Subtask elem : epic.getArraySubtask()){
                 Subtask st = new Subtask(elem.getName(),elem.getDescription(),elem.getStatus());
                 st.setEpicId(epic.getId()); // ???
@@ -40,7 +44,11 @@ public class Epic extends Task {
 
     public Epic(String name, String description,int id, Status status) {
         super(name, description, id,Status.NEW);
-        arraySubtask = new ArrayList<>();
+        //arraySubtask = new ArrayList<>(); //--> final
+    }
+    public Epic(String name, String description, Status status) {
+        super(name, description,status);
+        //arraySubtask = new ArrayList<>(); //--> final
     }
 
     @Override
@@ -64,7 +72,11 @@ public class Epic extends Task {
     }
 
     public void setArraySubtask(ArrayList<Subtask> arraySubtask) {
-        this.arraySubtask = arraySubtask;
+        //this.arraySubtask = arraySubtask;
+        this.arraySubtask.clear();
+        for(Subtask elem : arraySubtask){
+            this.arraySubtask.add(elem.copySubtask());
+        }
     }
 
     public Status updateStatus() {

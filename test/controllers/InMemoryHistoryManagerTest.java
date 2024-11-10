@@ -114,7 +114,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(taskTest);
         taskTest.setStatus(Status.DONE);
         inMemoryHistoryManager.add(taskTest);
-        taskTest.setDescription("T1");
+        taskTest.setDescription("T1 ++++++");
         inMemoryHistoryManager.add(taskTest);
 
         inMemoryHistoryManager.add(new Epic("","",3,Status.NEW));

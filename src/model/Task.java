@@ -73,6 +73,8 @@ public class Task {
     }
 
     public void setDescription(String description) {
+        //final char[] b=description.toCharArray();
+        //this.description = new String(b);
         this.description = description;
     }
 
