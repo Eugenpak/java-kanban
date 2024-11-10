@@ -15,15 +15,12 @@ public class Main {
         TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
 
-        //InMemoryHistoryManager historyMan = new InMemoryHistoryManager();
-        List<Task> arrList = historyManager.getHistory();
-
         Task task = new Task("name 1", "T0", Status.NEW);
         taskManager.addNewTask(task);
-        //historyMan.add(task);
+
         task = new Task("name 2", "T1", Status.NEW);
         taskManager.addNewTask(task);
-        //historyMan.add(task);
+
         Epic epic = new Epic("name E1", "E2");
         int epicId = taskManager.addNewEpic(epic);
         Subtask subtask = new Subtask("name S1", "S3", Status.NEW, epicId);
@@ -31,49 +28,36 @@ public class Main {
         //historyMan.add(subtask);
         subtask = new Subtask("name S2", "S4", Status.NEW, epicId);
         taskManager.addNewSubtask(subtask);
-        //historyMan.add(subtask);
+
         taskManager.updateEpic(epic);
-        //historyMan.add(epic);
+
         epic = new Epic("name E2", "E5");
         epicId = taskManager.addNewEpic(epic);
         subtask = new Subtask("name S3", "S6", Status.NEW, epicId);
         taskManager.addNewSubtask(subtask);
-        //historyMan.add(subtask);
         taskManager.updateEpic(epic);
-        //historyMan.add(epic);
         historyManager.getHistory();
-
         printAllTasks(taskManager);
         System.out.println();
         subtask = taskManager.getSubtaskById(3);
         subtask.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask(subtask);
-        arrList = historyManager.getHistory();
-        //historyMan.add(subtask);
         subtask = taskManager.getSubtaskById(4);
         subtask.setStatus(Status.DONE);
-
         taskManager.updateSubtask(subtask);
-        //historyMan.add(subtask);
         task=taskManager.getTaskById(1);
         task.setStatus(Status.IN_PROGRESS);
         taskManager.updateTask(task);
-        //historyMan.add(subtask);
         taskManager.deleteSubtask(3);
         taskManager.deleteTask(0);
         taskManager.deleteEpic(5);
         printAllTasks(taskManager);
         Epic ep = new Epic(taskManager.getEpicById(2),true);
         taskManager.addNewEpic(ep);
-        //historyMan.add(ep);
-        arrList = historyManager.getHistory();;
         subtask =taskManager.getSubtaskById(8);
         subtask.setStatus(Status.IN_PROGRESS);
-        //historyMan.add(subtask);
         taskManager.updateEpic(ep);
-        arrList = historyManager.getHistory();
         taskManager.deleteSubtasks();
-        arrList = historyManager.getHistory();
         printAllTasks(taskManager);
         taskManager.deleteEpics();
         taskManager.deleteTasks();
