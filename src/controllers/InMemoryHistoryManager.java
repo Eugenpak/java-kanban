@@ -27,7 +27,22 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory(){
-        return new ArrayList<>(history);
+        final List<Task> copy = new ArrayList<>();
+        Task copyElem;
+        for (Task elem : history){
+            if (elem instanceof Subtask){
+                copyElem= new Subtask((Subtask) elem);
+            } else if (elem instanceof Epic){
+                copyElem= new Epic((Epic) elem);
+            } else if (elem instanceof Task){
+                copyElem= new Task(elem);
+            } else {
+                copyElem=null;
+            }
+            copy.add(copyElem);
+        }
+        return copy;
+        //return List.copyOf(history);
     }
 
 }

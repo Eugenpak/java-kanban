@@ -6,49 +6,52 @@ import model.Task;
 import service.Status;
 
 public final class Managers {
+    /*
     private final static TaskManager taskManager;// = new InMemoryTaskManager();
     private final static HistoryManager historyManager;// = new InMemoryHistoryManager();
     static {
         historyManager = new InMemoryHistoryManager();
         taskManager = new InMemoryTaskManager();
-    }
+    } */
     public static TaskManager getDefault() {
-        return taskManager;
+        //return taskManager;
+        return new InMemoryTaskManager();
     }
 
     public static HistoryManager getDefaultHistory() {
-        return historyManager;
+        //return historyManager;
+        return new InMemoryHistoryManager();
     }
 
-    public static void testManagers(){
-        TaskManager taskManager = Managers.getDefault();
-        HistoryManager historyManager = Managers.getDefaultHistory();
+    public static void testManagers(TaskManager taskManager){
+        //HistoryManager historyManager = Managers.getDefaultHistory();
+        //TaskManager taskManager = Managers.getDefault();
         fillManagers(taskManager);
         printAllTasks(taskManager);
     }
     private static void fillManagers(TaskManager manager) {
         Task task = new Task("name 1", "T0", Status.NEW);
-        taskManager.addNewTask(task);
+        manager.addNewTask(task);
 
         task = new Task("name 2", "T1", Status.NEW);
-        taskManager.addNewTask(task);
+        manager.addNewTask(task);
 
         Epic epic = new Epic("name E1", "E2");
-        int epicId = taskManager.addNewEpic(epic);
+        int epicId = manager.addNewEpic(epic);
         Subtask subtask = new Subtask("name S1", "S3", Status.NEW, epicId);
-        taskManager.addNewSubtask(subtask);
+        manager.addNewSubtask(subtask);
 
         subtask = new Subtask("name S2", "S4", Status.NEW, epicId);
-        taskManager.addNewSubtask(subtask);
+        manager.addNewSubtask(subtask);
 
-        taskManager.updateEpic(epic);
+        manager.updateEpic(epic);
 
         epic = new Epic("name E2", "E5");
-        epicId = taskManager.addNewEpic(epic);
+        epicId = manager.addNewEpic(epic);
         subtask = new Subtask("name S3", "S6", Status.NEW, epicId);
-        taskManager.addNewSubtask(subtask);
+        manager.addNewSubtask(subtask);
 
-        taskManager.updateEpic(epic);
+        manager.updateEpic(epic);
     }
 
     private static void printAllTasks(TaskManager manager) {
