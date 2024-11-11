@@ -5,11 +5,10 @@ import model.Subtask;
 import model.Task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private ArrayList<Task> history;
+    private final ArrayList<Task> history;
 
     public InMemoryHistoryManager(){
         history = new ArrayList<>(10);
@@ -17,21 +16,13 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task){
+        if (task == null) {
+            return;
+        }
         if (history.size()>=10) {
-            history.remove(0);
+            history.removeFirst();
         }
-        final Task copyTask;
-        if (task instanceof Subtask){
-            copyTask = new Subtask((Subtask) task);
-        } else if (task instanceof Epic){
-            copyTask = new Epic((Epic) task);
-            //ArrayList<Subtask> listSubtask = ((Epic)copyTask).getArraySubtask();
-        } else if (task instanceof Task){
-            copyTask = new Task(task);
-        } else{
-            copyTask = null;
-        }
-        history.add(copyTask);
+        history.add(task);
     }
 
     @Override
