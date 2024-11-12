@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public class InMemoryTaskManager implements TaskManager {
-    private static int idCounter;
+    private int idCounter;
     private final HashMap<Integer,Task> mapTask;
     private final HashMap<Integer, Epic> mapEpic;
     private final HashMap<Integer, Subtask> mapSubtask;
@@ -24,7 +24,7 @@ public class InMemoryTaskManager implements TaskManager {
         historyManager= Managers.getDefaultHistory();
     }
 
-    static int getIdCounter() {
+    int getIdCounter() {
         return idCounter++;
     }
 
@@ -183,7 +183,7 @@ public class InMemoryTaskManager implements TaskManager {
     public int addNewTask(Task task){
         final int id;
         if (checkIdAdd(task)){
-            id = idCounter++;
+            id = getIdCounter(); //idCounter++
             task.setId(id);
         } else {
             id = task.getId();

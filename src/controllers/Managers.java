@@ -6,26 +6,16 @@ import model.Task;
 import service.Status;
 
 public final class Managers {
-    /*
-    private final static TaskManager taskManager;// = new InMemoryTaskManager();
-    private final static HistoryManager historyManager;// = new InMemoryHistoryManager();
-    static {
-        historyManager = new InMemoryHistoryManager();
-        taskManager = new InMemoryTaskManager();
-    } */
+
     public static TaskManager getDefault() {
-        //return taskManager;
         return new InMemoryTaskManager();
     }
 
     public static HistoryManager getDefaultHistory() {
-        //return historyManager;
         return new InMemoryHistoryManager();
     }
 
     public static void testManagers(TaskManager taskManager){
-        //HistoryManager historyManager = Managers.getDefaultHistory();
-        //TaskManager taskManager = Managers.getDefault();
         fillManagers(taskManager);
         printAllTasks(taskManager);
     }
@@ -77,5 +67,4 @@ public final class Managers {
             System.out.println(task);
         }
     }
-
 }

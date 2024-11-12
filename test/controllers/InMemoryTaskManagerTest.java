@@ -88,34 +88,34 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getTaskById() {
-        final int idTask = 1;
-        Task task1 = new Task("name-1","des-1",idTask ,Status.NEW);
-        taskManager.addNewTask(task1);
-        final Task savedTask = taskManager.getTaskById(1);
+
+        Task task1 = new Task("name-1","des-1",2 ,Status.NEW);
+        final int idTask = taskManager.addNewTask(task1);
+        final Task savedTask = taskManager.getTaskById(idTask);
         assertNotNull(savedTask, "Задачи не возвращается.");
-        assertEquals(idTask, savedTask.getId(), "Задачи не совпадают.");
+        assertEquals(0, savedTask.getId(), "Задачи не совпадают.");
         assertEquals("class model.Task",savedTask.getClass().toString());
     }
 
     @Test
     void getSubtaskById() {
-        final int idSubtask = 1;
-        Subtask subtask1 = new Subtask("S-1","DS-1",idSubtask ,Status.NEW,-5);
-        taskManager.addNewSubtask(subtask1);
+
+        Subtask subtask1 = new Subtask("S-1","DS-1",1,Status.NEW,-5);
+        final int idSubtask = taskManager.addNewSubtask(subtask1);
         final Subtask savedSubtask = taskManager.getSubtaskById(idSubtask);
         assertNotNull(savedSubtask, "Задачи не возвращается.");
-        assertEquals(idSubtask, savedSubtask.getId(), "Задачи не совпадают.");
+        assertEquals(0, savedSubtask.getId(), "Задачи не совпадают.");
         assertEquals("class model.Subtask",savedSubtask.getClass().toString());
     }
 
     @Test
     void getEpicById() {
-        final int idEpic = 1;
-        Epic epic1 = new Epic("E-1","DE-1",idEpic ,Status.NEW);
-        taskManager.addNewEpic(epic1);
+
+        Epic epic1 = new Epic("E-1","DE-1",1 ,Status.NEW);
+        final int idEpic = taskManager.addNewEpic(epic1);
         final Epic savedEpic = taskManager.getEpicById(idEpic);
         assertNotNull(savedEpic, "Задачи не возвращается.");
-        assertEquals(idEpic, savedEpic.getId(), "Задачи не совпадают.");
+        assertEquals(0, savedEpic.getId(), "Задачи не совпадают.");
         assertEquals("class model.Epic",savedEpic.getClass().toString());
     }
 

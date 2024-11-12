@@ -34,7 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                 copyElem= new Subtask((Subtask) elem);
             } else if (elem instanceof Epic){
                 copyElem= new Epic((Epic) elem);
-            } else if (elem instanceof Task){
+            } else if (elem != null){
                 copyElem= new Task(elem);
             } else {
                 copyElem=null;
@@ -42,7 +42,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             copy.add(copyElem);
         }
         return copy;
-        //return List.copyOf(history);
     }
 
 }

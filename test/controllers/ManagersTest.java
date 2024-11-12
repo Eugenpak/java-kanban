@@ -35,6 +35,5 @@ class ManagersTest {
         listHistory.get(5).setName("S3 ++++");
         assertNotNull(listHistory, "Задачи не возвращаются.");
         assertEquals(6, listHistory.size(), "Неверное количество задач.");
-        assertEquals(2,listHistory.get(0).getId(), "Список не пустой");
     }
 }

@@ -25,7 +25,7 @@ public class Main {
         int epicId = taskManager.addNewEpic(epic);
         Subtask subtask = new Subtask("name S1", "S3", Status.NEW, epicId);
         taskManager.addNewSubtask(subtask);
-        //historyMan.add(subtask);
+
         subtask = new Subtask("name S2", "S4", Status.NEW, epicId);
         taskManager.addNewSubtask(subtask);
 
