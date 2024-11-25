@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class InMemoryTaskManager implements TaskManager {
     private int idCounter;
@@ -159,6 +161,7 @@ public class InMemoryTaskManager implements TaskManager {
             final Epic newEpic = new Epic(epic);
             mapEpic.put(newEpic.getId(),newEpic);
             newEpic.updateStatus();
+            historyManager.add(newEpic);
             return true;
         }
         return false;
@@ -189,6 +192,7 @@ public class InMemoryTaskManager implements TaskManager {
             id = task.getId();
         }
         mapTask.put(id, task);
+        historyManager.add(task);
         return id;
     }
 
@@ -222,6 +226,7 @@ public class InMemoryTaskManager implements TaskManager {
             addNewSubtask(elem);
             elem.setEpicId(id);
         }
+        historyManager.add(epic);
         return id;
     }
 
@@ -235,11 +240,13 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subtask.setId(id);
         mapSubtask.put(id,subtask);
+        historyManager.add(subtask);
         final int epicId = subtask.getEpicId();
         Epic epic= mapEpic.get(epicId);
         if (epic!=null) {
             setEpicSubtask(epicId,id);
         }
+
         return id;
     }
 
