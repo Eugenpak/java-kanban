@@ -254,6 +254,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTask(int id) {
         if (getTaskById(id)!=null) {
             mapTask.remove(id);
+            historyManager.remove(id);
         }
     }
 
@@ -265,6 +266,7 @@ public class InMemoryTaskManager implements TaskManager {
                 mapSubtask.remove(elem.getId());
             }
             mapEpic.remove(id);
+            historyManager.remove(id);
         }
     }
 
@@ -278,6 +280,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.updateStatus();
             }
             mapSubtask.remove(id);
+            historyManager.remove(id);
         }
     }
 

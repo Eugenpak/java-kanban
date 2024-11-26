@@ -3,6 +3,7 @@ package controllers;
 import model.Epic;
 import model.Subtask;
 import model.Task;
+import service.Node;
 
 
 import java.util.ArrayList;
@@ -12,11 +13,19 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private List<Task> history;
-    private final HashMap<Integer,Node<Task>> nodeMap;
+    private final HashMap<Integer, Node<Task>> nodeMap;
 
     //Указатель на последний элемент списка. Он же last
     private Node<Task> tail;
     private Node<Task> first;
+
+    Node<Task> getValueNodeMapById(int id){
+        if (nodeMap.containsKey(id)) {
+            return nodeMap.get(id);
+        } else {
+            return new Node(null,null,null);
+        }
+    }
 
     public InMemoryHistoryManager(){
         history = new LinkedList<>();
@@ -61,8 +70,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    @Override
-    public List<Task> getHistory(){
+     List<Task> getTasks(){
         final List<Task> copy = new LinkedList<>();
         Task copyElem;
         for (Node<Task> x = first; x != null; x = x.next) {
@@ -81,19 +89,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         return copy;
     }
 
-    class Node<E> {
-        public E data;
-        public Node<E> next;
-        public Node<E> prev;
-
-        public Node(Node<E> prev, E data, Node<E> next) {
-            this.data = data;
-            this.next = next;
-            this.prev = prev;
-        }
+    @Override
+    public List<Task> getHistory(){
+        return getTasks();
     }
 
-    public void linkLast(Task element) {
+
+    void linkLast(Task element) {
         // Реализуйте метод
         final Node<Task> oldTail = tail;
         final Node<Task> newNode = new Node<>(oldTail, element, null);
