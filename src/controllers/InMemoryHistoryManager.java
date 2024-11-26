@@ -47,10 +47,12 @@ public class InMemoryHistoryManager implements HistoryManager {
             Task task =nodeMap.get(id).data;
             if (task instanceof Subtask) {
                 int epicId = ((Subtask)task).getEpicId();
-                ArrayList<Subtask> arraySub = ((Epic)nodeMap.get(epicId).data).getArraySubtask();
-                for (int i=0; i<arraySub.size();i++){
-                    if (arraySub.get(i).getId()==id) {
-                        arraySub.remove(i);
+                if (epicId>=0) {
+                    ArrayList<Subtask> arraySub = ((Epic)nodeMap.get(epicId).data).getArraySubtask();
+                    for (int i=0; i<arraySub.size();i++){
+                        if (arraySub.get(i).getId()==id) {
+                            arraySub.remove(i);
+                        }
                     }
                 }
                 removeNode(nodeMap.get(id));
