@@ -20,7 +20,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addShouldBe1WhenEpic(){
+    void addShouldBe1WhenEpic() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
 
@@ -32,7 +32,7 @@ class InMemoryHistoryManagerTest {
         assertEquals("class model.Epic",inMemoryHistoryManager.getHistory().get(1).getClass().toString());
     }
     @Test
-    void addShouldBe3WhenTask(){
+    void addShouldBe3WhenTask() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
 
@@ -45,7 +45,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addShouldBe2WhenSubtask(){
+    void addShouldBe2WhenSubtask() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
 
@@ -58,7 +58,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addShouldBeListSize12WhenAdd12(){
+    void addShouldBeListSize12WhenAdd12() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
 
@@ -82,7 +82,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addTaskInLinkedList(){
+    void addTaskInLinkedList() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
 
@@ -123,7 +123,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void test9(){
+    void test9() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
         inMemoryHistoryManager.add(new Task("","",0,Status.NEW));
@@ -142,7 +142,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(new Epic("","",3,Status.NEW));
         inMemoryHistoryManager.add(new Subtask("","",4,Status.NEW,3));
 
-        List<Task> t= inMemoryHistoryManager.getHistory();
+        List<Task> t = inMemoryHistoryManager.getHistory();
         assertEquals(5,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
         taskTest = null;
         assertEquals(2,inMemoryHistoryManager.getHistory().get(1).getId(), "Список не пустой");
@@ -150,7 +150,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void removeTaskFromGetHistory(){
+    void removeTaskFromGetHistory() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
 
@@ -172,20 +172,20 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void removeEpicFromGetHistory(){
+    void removeEpicFromGetHistory() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
         Epic epic1 = new Epic("E0","DE0",0,Status.NEW);
         inMemoryHistoryManager.add(epic1);
         ArrayList<Subtask> arraySubtask = new ArrayList<>();
-        for (int i=1; i<=5; i++){
-            Subtask subtask = new Subtask("S"+i,"DS"+i,i,Status.NEW,0);
+        for (int i = 1; i <= 5; i++) {
+            Subtask subtask = new Subtask("S" + i,"DS" + i,i,Status.NEW,0);
             inMemoryHistoryManager.add(subtask);
             arraySubtask.add(subtask);
         }
         epic1.setArraySubtask(arraySubtask);
         inMemoryHistoryManager.add(epic1);
-        epic1=new Epic("E6","DE6",6,Status.NEW);
+        epic1 = new Epic("E6","DE6",6,Status.NEW);
         inMemoryHistoryManager.add(epic1);
 
         inMemoryHistoryManager.remove(0);
@@ -195,20 +195,20 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void removeSubtaskFromGetHistory(){
+    void removeSubtaskFromGetHistory() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
         Epic epic1 = new Epic("E0","DE0",0,Status.NEW);
         inMemoryHistoryManager.add(epic1);
         ArrayList<Subtask> arraySubtask = new ArrayList<>();
-        for (int i=1; i<=5; i++){
-            Subtask subtask = new Subtask("S"+i,"DS"+i,i,Status.NEW,0);
+        for (int i = 1; i <= 5; i++) {
+            Subtask subtask = new Subtask("S" + i,"DS" + i,i,Status.NEW,0);
             inMemoryHistoryManager.add(subtask);
             arraySubtask.add(subtask);
         }
         epic1.setArraySubtask(arraySubtask);
         inMemoryHistoryManager.add(epic1);
-        epic1=new Epic("E6","DE6",6,Status.NEW);
+        epic1 = new Epic("E6","DE6",6,Status.NEW);
         inMemoryHistoryManager.add(epic1);
         List<Task> listHistory = inMemoryHistoryManager.getHistory();
         Subtask subtaskAct = (Subtask) listHistory.get(0);
@@ -232,7 +232,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void removeNode(){
+    void removeNode() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
 

@@ -28,7 +28,7 @@ class HistoryManagerTest {
         HistoryManager historyManager = new InMemoryHistoryManager();
         assertEquals(0,historyManager.getHistory().size(), "Список не пустой");
 
-        for (int i=0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             historyManager.add(new Task("","",i,Status.NEW));
         }
         historyManager.add(new Epic("","",4,Status.NEW));

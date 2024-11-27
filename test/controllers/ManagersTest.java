@@ -2,10 +2,7 @@ package controllers;
 
 import model.Task;
 import org.junit.jupiter.api.Test;
-//import service.Status;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
@@ -23,7 +20,7 @@ class ManagersTest {
     }
 
     @Test
-    void testManagersTest(){
+    void testManagersTest() {
         TaskManager taskManager = Managers.getDefault();
         Managers.testManagers(taskManager);
 
