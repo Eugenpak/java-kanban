@@ -22,6 +22,7 @@ public class Task {
         this.id = task.getId();
         this.status = task.status;
     }
+
     public Task() {
     }
 
