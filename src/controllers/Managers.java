@@ -15,10 +15,11 @@ public final class Managers {
         return new InMemoryHistoryManager();
     }
 
-    public static void testManagers(TaskManager taskManager){
+    public static void testManagers(TaskManager taskManager) {
         fillManagers(taskManager);
         printAllTasks(taskManager);
     }
+
     private static void fillManagers(TaskManager manager) {
         Task task = new Task("name T0", "T0", Status.NEW);
         manager.addNewTask(task);
