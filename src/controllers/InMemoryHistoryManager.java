@@ -19,7 +19,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node<Task> tail;
     private Node<Task> first;
 
-    Node<Task> getValueNodeMapById(int id){
+    Node<Task> getValueNodeMapById(int id) {
         if (nodeMap.containsKey(id)) {
             return nodeMap.get(id);
         } else {
@@ -27,13 +27,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    public InMemoryHistoryManager(){
+    public InMemoryHistoryManager() {
         history = new LinkedList<>();
         nodeMap = new HashMap<>();
     }
 
     @Override
-    public void add(Task task){
+    public void add(Task task) {
         if (task == null) {
             return;
         }
@@ -41,16 +41,17 @@ public class InMemoryHistoryManager implements HistoryManager {
         //history.add(task);
         history = getHistory();
     }
+
     @Override
-    public void remove(int id){
-        if (nodeMap.containsKey(id)){
-            Task task =nodeMap.get(id).data;
+    public void remove(int id) {
+        if (nodeMap.containsKey(id)) {
+            Task task = nodeMap.get(id).data;
             if (task instanceof Subtask) {
                 int epicId = ((Subtask)task).getEpicId();
-                if (epicId>=0) {
+                if (epicId >= 0) {
                     ArrayList<Subtask> arraySub = ((Epic)nodeMap.get(epicId).data).getArraySubtask();
-                    for (int i=0; i<arraySub.size();i++){
-                        if (arraySub.get(i).getId()==id) {
+                    for (int i = 0; i < arraySub.size();i++) {
+                        if (arraySub.get(i).getId() == id) {
                             arraySub.remove(i);
                         }
                     }
@@ -59,7 +60,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                 nodeMap.remove(id);
             } else if (task instanceof Epic) {
                 ArrayList<Subtask> arraySub = ((Epic)task).getArraySubtask();
-                for (Subtask elem:arraySub){
+                for (Subtask elem:arraySub) {
                     removeNode(nodeMap.get(elem.getId()));
                     nodeMap.remove(elem.getId());
                 }
@@ -72,18 +73,18 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-     List<Task> getTasks(){
+     List<Task> getTasks() {
         final List<Task> copy = new LinkedList<>();
         Task copyElem;
         for (Node<Task> x = first; x != null; x = x.next) {
-            if (x.data instanceof Subtask){
-                copyElem= new Subtask((Subtask) x.data);
-            } else if (x.data instanceof Epic){
-                copyElem= new Epic((Epic) x.data);
-            } else if (x.data != null){
-                copyElem= new Task(x.data);
+            if (x.data instanceof Subtask) {
+                copyElem = new Subtask((Subtask) x.data);
+            } else if (x.data instanceof Epic) {
+                copyElem = new Epic((Epic) x.data);
+            } else if (x.data != null) {
+                copyElem = new Task(x.data);
             } else {
-                copyElem=null;
+                copyElem = null;
             }
             final Task t = copyElem;
             copy.add(t);
@@ -92,7 +93,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public List<Task> getHistory(){
+    public List<Task> getHistory() {
         return getTasks();
     }
 
@@ -102,14 +103,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         final Node<Task> oldTail = tail;
         final Node<Task> newNode = new Node<>(oldTail, element, null);
         tail = newNode;
-        if (oldTail == null){
+        if (oldTail == null) {
             first = newNode;
-        }
-        else
+        } else
             oldTail.next = newNode;
 
         Integer idTask = element.getId();
-        if (nodeMap.containsKey(idTask)){
+        if (nodeMap.containsKey(idTask)) {
             final Node<Task> temp = nodeMap.get(idTask);
             // удалить узел.
             removeNode(temp);
