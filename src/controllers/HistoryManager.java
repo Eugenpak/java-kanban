@@ -2,7 +2,7 @@ package controllers;
 
 import model.Task;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 public interface HistoryManager {
