@@ -1,6 +1,7 @@
 package model;
 
 import service.Status;
+
 public class Subtask extends Task {
     private int epicId;
 
@@ -44,7 +45,7 @@ public class Subtask extends Task {
     }
 
     public void update(Epic epic) {
-        if (!(epic==null)) {
+        if (!(epic == null)) {
             epic.updateStatus();
         }
     }
@@ -54,7 +55,7 @@ public class Subtask extends Task {
     }
 
     public void setEpicId(int epicId) {
-        if (super.getId() != epicId){
+        if (super.getId() != epicId) {
             this.epicId = epicId;
         }
     }
