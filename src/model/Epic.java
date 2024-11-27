@@ -16,6 +16,7 @@ public class Epic extends Task {
     public Epic(Epic epic) {
         super(epic.getName(), epic.getDescription(), epic.getId(),epic.getStatus());
         if (epic.getArraySubtask() == null) {
+            //
         } else {
             for (Subtask elem : epic.getArraySubtask()) {
                 this.arraySubtask.add(elem);
@@ -67,7 +68,7 @@ public class Epic extends Task {
 
     public void setArraySubtask(ArrayList<Subtask> arraySubtask) {
         this.arraySubtask.clear();
-        for(Subtask elem : arraySubtask) {
+        for (Subtask elem : arraySubtask) {
             this.arraySubtask.add(elem.copySubtask());
         }
     }
@@ -77,10 +78,10 @@ public class Epic extends Task {
             super.setStatus(Status.NEW);
             return getStatus();
         }
-        Status temp=Status.NEW;
+        Status temp = Status.NEW;
         for (Subtask subtask : arraySubtask) {
             if (!(subtask.getStatus() == Status.NEW)) {
-                temp=subtask.getStatus();
+                temp = subtask.getStatus();
                 break;
             }
         }
@@ -88,10 +89,10 @@ public class Epic extends Task {
             setStatus(temp);
             return getStatus();
         }
-        temp=Status.DONE;
+        temp = Status.DONE;
         for (Subtask subtask : arraySubtask) {
             if (!(subtask.getStatus() == Status.DONE)) {
-                temp=subtask.getStatus();
+                temp = subtask.getStatus();
                 break;
             }
         }
