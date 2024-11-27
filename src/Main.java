@@ -77,13 +77,13 @@ public class Main {
 
         Epic epic = new Epic("E-0","DE-0");
         int epicId0 = manager.addNewEpic(epic);
-        Subtask subtask =new Subtask("S-1","SE-1",Status.NEW);
+        Subtask subtask = new Subtask("S-1","SE-1",Status.NEW);
         int subtaskId = manager.addNewSubtask(subtask);
         manager.setEpicSubtask(epicId0,subtaskId);
-        subtask =new Subtask("S-2","SE-2",Status.NEW);
+        subtask = new Subtask("S-2","SE-2",Status.NEW);
         subtaskId = manager.addNewSubtask(subtask);
         manager.setEpicSubtask(epicId0,subtaskId);
-        subtask =new Subtask("S-3","SE-3",Status.IN_PROGRESS);
+        subtask = new Subtask("S-3","SE-3",Status.IN_PROGRESS);
         subtaskId = manager.addNewSubtask(subtask);
         manager.setEpicSubtask(epicId0,subtaskId);
         manager.updateEpic(manager.getEpicById(epicId0));
@@ -95,7 +95,7 @@ public class Main {
 
 
 
-    public static void userScenarioOld(){
+    public static void userScenarioOld() {
         TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -129,7 +129,7 @@ public class Main {
         subtask = taskManager.getSubtaskById(4);
         subtask.setStatus(Status.DONE);
         taskManager.updateSubtask(subtask);
-        task=taskManager.getTaskById(1);
+        task = taskManager.getTaskById(1);
         task.setStatus(Status.IN_PROGRESS);
         taskManager.updateTask(task);
         taskManager.deleteSubtask(3);
@@ -138,7 +138,7 @@ public class Main {
         printAllTasks(taskManager);
         Epic ep = new Epic(taskManager.getEpicById(2),true);
         taskManager.addNewEpic(ep);
-        subtask =taskManager.getSubtaskById(8);
+        subtask = taskManager.getSubtaskById(8);
         subtask.setStatus(Status.IN_PROGRESS);
         taskManager.updateEpic(ep);
         taskManager.deleteSubtasks();
@@ -150,13 +150,13 @@ public class Main {
 
     public static void printAllTasks(TaskManager taskManager) {
         System.out.println("Печать полного списка задач");
-        for (Task elem : taskManager.getListTask()){
+        for (Task elem : taskManager.getListTask()) {
             System.out.println(elem);
         }
-        for (Epic elem : taskManager.getListEpic()){
+        for (Epic elem : taskManager.getListEpic()) {
             printEpicSubtask(taskManager,elem.getId());
         }
-        for (Subtask elem : taskManager.getListSubtask()){
+        for (Subtask elem : taskManager.getListSubtask()) {
             System.out.println(elem);
         }
         System.out.println();
@@ -168,7 +168,7 @@ public class Main {
         System.out.println("Epic{id=" + epic.getId() + ", name='" + epic.getName() +
                 "', description.length =" + epic.getDescription().length() +
                 ", status='" + epic.getStatus() + "' ArraySubtask[" + epic.getArraySubtask().size() + "]}");
-        for (Subtask elem : taskManager.getEpicSubtasks(idEpic)){
+        for (Subtask elem : taskManager.getEpicSubtasks(idEpic)) {
             System.out.println(" --> " + elem);
         }
     }
