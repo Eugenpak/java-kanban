@@ -3,8 +3,6 @@ package controllers;
 import model.Epic;
 import model.Subtask;
 import model.Task;
-import service.Node;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,23 +10,36 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private List<Task> history;
+    //private List<Task> history;
     private final HashMap<Integer, Node<Task>> nodeMap;
 
     //Указатель на последний элемент списка. Он же last
     private Node<Task> tail;
     private Node<Task> first;
 
+    class Node<E> {
+        public E data;
+        public Node<E> next;
+        public Node<E> prev;
+
+        public Node(Node<E> prev, E data, Node<E> next) {
+            this.data = data;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
     Node<Task> getValueNodeMapById(int id) {
         if (nodeMap.containsKey(id)) {
             return nodeMap.get(id);
         } else {
-            return new Node(null,null,null);
+            return null;//new Node(null,null,null);
         }
     }
 
+
     public InMemoryHistoryManager() {
-        history = new LinkedList<>();
+        //history = new LinkedList<>();
         nodeMap = new HashMap<>();
     }
 
@@ -39,7 +50,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
         linkLast(task);
         //history.add(task);
-        history = getHistory();
+        //history = getHistory();
     }
 
     @Override
@@ -69,7 +80,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                 removeNode(nodeMap.get(id));
             }
             nodeMap.remove(id);
-            history = getHistory();
+            //history = getHistory();
         }
     }
 
