@@ -129,21 +129,24 @@ class InMemoryHistoryManagerTest {
         Task taskTest = new Task("","",1,Status.NEW);
         inMemoryHistoryManager.add(taskTest);
         inMemoryHistoryManager.add(new Task("","",2,Status.NEW));
-        assertEquals(3,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
+        List<Task> t = inMemoryHistoryManager.getHistory();
+        assertEquals(3,t .size(), "Список не пустой");
 
         taskTest.setStatus(Status.IN_PROGRESS);
         inMemoryHistoryManager.add(taskTest);
+        t = inMemoryHistoryManager.getHistory();
         taskTest.setStatus(Status.DONE);
         inMemoryHistoryManager.add(taskTest);
+        t = inMemoryHistoryManager.getHistory();
         taskTest.setDescription("T1 ++++++");
         inMemoryHistoryManager.add(taskTest);
+        t = inMemoryHistoryManager.getHistory();
 
         inMemoryHistoryManager.add(new Epic("","",3,Status.NEW));
         inMemoryHistoryManager.add(new Subtask("","",4,Status.NEW,3));
 
-        List<Task> t = inMemoryHistoryManager.getHistory();
-        assertEquals(5,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
-        taskTest = null;
+        t = inMemoryHistoryManager.getHistory();
+        assertEquals(5,t.size(), "Список не пустой"); //taskTest = null;
         assertEquals(2,inMemoryHistoryManager.getHistory().get(1).getId(), "Список не пустой");
         assertEquals("class model.Task",inMemoryHistoryManager.getHistory().get(1).getClass().toString());
     }
