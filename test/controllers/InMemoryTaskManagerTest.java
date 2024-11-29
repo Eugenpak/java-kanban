@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -385,5 +386,54 @@ class InMemoryTaskManagerTest {
         final Task findedTask = taskManager.findId(taskId);
         assertNotNull(findedTask, "Задача не найдена.");
         assertEquals(taskId, findedTask.getId(), "Значение поля не равны!");
+    }
+
+    @Test
+    void removeSubtaskFromGetHistory() {
+        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+        assertEquals(0,inMemoryTaskManager.getHistory().size(), "Список не пустой");
+        Epic epic1 = new Epic("E0","DE0",0,Status.NEW);
+        inMemoryTaskManager.addNewEpic(epic1);
+        ArrayList<Subtask> arraySubtask = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Subtask subtask = new Subtask("S" + i,"DS" + i,i,Status.NEW,0);
+            inMemoryTaskManager.addNewSubtask(subtask);
+            arraySubtask.add(subtask);
+        }
+        epic1.setArraySubtask(arraySubtask);
+        inMemoryTaskManager.addNewEpic(epic1);
+        epic1 = new Epic("E6","DE6",6,Status.NEW);
+        inMemoryTaskManager.addNewEpic(epic1);
+        List<Task> listHistory = inMemoryTaskManager.getHistory();
+        Subtask subtaskAct = (Subtask) listHistory.get(0);
+        assertEquals(7,listHistory.size(), "Список не пустой");
+        assertEquals(1,subtaskAct.getId(), "Список не пустой");
+        assertTrue(listHistory.contains(subtaskAct));
+
+        inMemoryTaskManager.deleteSubtask(1);
+        listHistory = inMemoryTaskManager.getHistory();
+        assertEquals(6,listHistory.size(), "Список не пустой");
+        assertFalse(listHistory.contains(subtaskAct));
+    }
+
+    @Test
+    void removeEpicFromGetHistory() {
+        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+        assertEquals(0,inMemoryTaskManager.getHistory().size(), "Список не пустой");
+        Epic epic1 = new Epic("E0","DE0",0,Status.NEW);
+        inMemoryTaskManager.addNewEpic(epic1);
+        for (int i = 1; i <= 5; i++) {
+            Subtask subtask = new Subtask("S" + i,"DS" + i,i,Status.NEW,0);
+            inMemoryTaskManager.addNewSubtask(subtask);
+        }
+
+        inMemoryTaskManager.addNewEpic(epic1);
+        epic1 = new Epic("E6","DE6",6,Status.NEW);
+        inMemoryTaskManager.addNewEpic(epic1);
+
+        inMemoryTaskManager.deleteEpic(0);
+        List<Task> listHistory = inMemoryTaskManager.getHistory();
+        assertEquals(1,listHistory.size(), "Список не пустой");
+        assertEquals(6,listHistory.get(0).getId(), "Список не пустой");
     }
 }

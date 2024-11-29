@@ -263,6 +263,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic != null) {
             for (Subtask elem : epic.getArraySubtask()) {
                 mapSubtask.remove(elem.getId());
+                historyManager.remove(elem.getId());
             }
             mapEpic.remove(id);
             historyManager.remove(id);
@@ -285,12 +286,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTasks() {
+        for (Task task : mapTask.values()) {
+            historyManager.remove(task.getId());
+        }
         mapTask.clear();
     }
 
     @Override
     public void deleteEpics() {
+        for (Epic epic : mapEpic.values()) {
+            historyManager.remove(epic.getId());
+        }
         mapEpic.clear();
+        for (Subtask subtask : mapSubtask.values()) {
+            historyManager.remove(subtask.getId());
+        }
         mapSubtask.clear();
     }
 
@@ -299,6 +309,9 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic elem : getListEpic()) {
             elem.getArraySubtask().clear();
             updateEpic(elem);
+        }
+        for (Subtask subtask : mapSubtask.values()) {
+            historyManager.remove(subtask.getId());
         }
         mapSubtask.clear();
     }

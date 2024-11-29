@@ -51,6 +51,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
+        /*
         if (nodeMap.containsKey(id)) {
             Task task = nodeMap.get(id).data;
             if (task instanceof Subtask) {
@@ -73,6 +74,8 @@ public class InMemoryHistoryManager implements HistoryManager {
             }
             removeNode(nodeMap.get(id));
         }
+        */
+        removeNode(nodeMap.get(id));
     }
 
      List<Task> getTasks() {
