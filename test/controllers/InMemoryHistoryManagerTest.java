@@ -31,6 +31,7 @@ class InMemoryHistoryManagerTest {
         assertEquals(1,inMemoryHistoryManager.getHistory().get(1).getId(), "Список не пустой");
         assertEquals("class model.Epic",inMemoryHistoryManager.getHistory().get(1).getClass().toString());
     }
+
     @Test
     void addShouldBe3WhenTask() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
@@ -95,13 +96,11 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(new Task("","",2,Status.NEW));
         inMemoryHistoryManager.add(new Epic("","",3,Status.NEW));
 
-
         assertEquals(3,inMemoryHistoryManager.getHistory().get(5).getId(), "Список не пустой");
         assertEquals("class model.Epic",inMemoryHistoryManager.getHistory().get(5).getClass().toString());
         assertEquals("class model.Task",inMemoryHistoryManager.getHistory().get(1).getClass().toString());
         assertEquals(6,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
     }
-
 
     @Test
     void getHistory() {
@@ -244,5 +243,4 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.removeNode(inMemoryHistoryManager.getLastNode());
         assertEquals(0,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
     }
-
 }
