@@ -4,7 +4,6 @@ import model.Epic;
 import model.Subtask;
 import model.Task;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,30 +50,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        /*
-        if (nodeMap.containsKey(id)) {
-            Task task = nodeMap.get(id).data;
-            if (task instanceof Subtask) {
-                //Удаление Subtask в Epic-ке
-                int epicId = ((Subtask)task).getEpicId();
-                if (epicId >= 0) {
-                    ArrayList<Subtask> arraySub = ((Epic)nodeMap.get(epicId).data).getArraySubtask();
-                    for (int i = 0; i < arraySub.size();i++) {
-                        if (arraySub.get(i).getId() == id) {
-                            arraySub.remove(i);
-                        }
-                    }
-                }
-            } else if (task instanceof Epic) {
-                //Удаление всех Subtask, которые привязаны к Epic-ку
-                ArrayList<Subtask> arraySub = ((Epic)task).getArraySubtask();
-                for (Subtask elem:arraySub) {
-                    removeNode(nodeMap.get(elem.getId()));
-                }
-            }
-            removeNode(nodeMap.get(id));
-        }
-        */
         removeNode(nodeMap.get(id));
     }
 
