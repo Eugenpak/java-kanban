@@ -146,7 +146,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(new Subtask("","",4,Status.NEW,3));
 
         t = inMemoryHistoryManager.getHistory();
-        assertEquals(5,t.size(), "Список не пустой"); //taskTest = null;
+        assertEquals(5,t.size(), "Список не пустой");
         assertEquals(2,inMemoryHistoryManager.getHistory().get(1).getId(), "Список не пустой");
         assertEquals("class model.Task",inMemoryHistoryManager.getHistory().get(1).getClass().toString());
     }
