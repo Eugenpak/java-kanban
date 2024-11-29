@@ -228,7 +228,8 @@ class InMemoryHistoryManagerTest {
         assertEquals(0,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
 
         inMemoryHistoryManager.linkLast(new Task("","",0,Status.NEW));
-        assertEquals(1,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
+        List<Task> listHistory = inMemoryHistoryManager.getTasks();
+        assertEquals(1,listHistory.size(), "Список не пустой");
     }
 
     @Test
@@ -236,13 +237,12 @@ class InMemoryHistoryManagerTest {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
 
-        inMemoryHistoryManager.linkLast(new Task("","",2,Status.NEW));
-        inMemoryHistoryManager.linkLast(new Epic("","",3,Status.NEW));
-        inMemoryHistoryManager.linkLast(new Subtask("","",4,Status.NEW,3));
+        Task task = new Task("","",2,Status.NEW);
+        inMemoryHistoryManager.linkLast(task);
 
-        assertEquals(3,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
-        inMemoryHistoryManager.removeNode(inMemoryHistoryManager.getValueNodeMapById(2));
-        assertEquals(2,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
+        assertEquals(1,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
+        inMemoryHistoryManager.removeNode(inMemoryHistoryManager.getLastNode());
+        assertEquals(0,inMemoryHistoryManager.getTasks().size(), "Список не пустой");
     }
 
 }

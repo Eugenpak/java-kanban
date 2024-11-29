@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    //private List<Task> history;
     private final HashMap<Integer, Node<Task>> nodeMap;
 
     //Указатель на последний элемент списка. Он же last
@@ -29,17 +28,16 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    Node<Task> getValueNodeMapById(int id) {
-        if (nodeMap.containsKey(id)) {
-            return nodeMap.get(id);
+    Node<Task> getLastNode() {
+        if (tail != null ) {
+            return tail;
         } else {
-            return null;//new Node(null,null,null);
+            return null;
         }
     }
 
 
     public InMemoryHistoryManager() {
-        //history = new LinkedList<>();
         nodeMap = new HashMap<>();
     }
 
@@ -48,9 +46,11 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             return;
         }
+        final int id = task.getId();
+        Node<Task> nodeTask = nodeMap.get(id);
+        removeNode(nodeTask);
         linkLast(task);
-        //history.add(task);
-        //history = getHistory();
+        nodeMap.put(id, tail);
     }
 
     @Override
@@ -58,6 +58,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (nodeMap.containsKey(id)) {
             Task task = nodeMap.get(id).data;
             if (task instanceof Subtask) {
+                //Удаление Subtask в Epic-ке
                 int epicId = ((Subtask)task).getEpicId();
                 if (epicId >= 0) {
                     ArrayList<Subtask> arraySub = ((Epic)nodeMap.get(epicId).data).getArraySubtask();
@@ -67,20 +68,14 @@ public class InMemoryHistoryManager implements HistoryManager {
                         }
                     }
                 }
-                removeNode(nodeMap.get(id));
-                nodeMap.remove(id);
             } else if (task instanceof Epic) {
+                //Удаление всех Subtask, которые привязаны к Epic-ку
                 ArrayList<Subtask> arraySub = ((Epic)task).getArraySubtask();
                 for (Subtask elem:arraySub) {
                     removeNode(nodeMap.get(elem.getId()));
-                    nodeMap.remove(elem.getId());
                 }
-                removeNode(nodeMap.get(id));
-            } else if (task instanceof Task) {
-                removeNode(nodeMap.get(id));
             }
-            nodeMap.remove(id);
-            //history = getHistory();
+            removeNode(nodeMap.get(id));
         }
     }
 
@@ -108,33 +103,22 @@ public class InMemoryHistoryManager implements HistoryManager {
         return getTasks();
     }
 
-
     void linkLast(Task element) {
-        // Реализуйте метод
-        final Node<Task> oldTail = tail;
-        final Node<Task> newNode = new Node<>(oldTail, element, null);
-        tail = newNode;
-        if (oldTail == null) {
-            first = newNode;
-        } else
-            oldTail.next = newNode;
-
-        Integer idTask = element.getId();
-        if (nodeMap.containsKey(idTask)) {
-            final Node<Task> temp = nodeMap.get(idTask);
-            // удалить узел.
-            removeNode(temp);
-            // обновляем положение element в nodeMap
-            nodeMap.put(element.getId(),newNode);
-            //temp.data = null;
-        } else {
-            nodeMap.put(element.getId(), newNode);
+        final Node<Task> node = new Node<>(tail, element, null);
+        if (first == null) { //Список пустой-в начало
+            first = node;
+        } else {  //Список не пустой-прикрепляем в конец
+            tail.next = node;
         }
+        tail = node; //Сдвинуть указатель в любом случае
     }
 
-    Task removeNode(Node<Task> x) {
-        // assert x != null;
-        final Task element = x.data;
+    void removeNode(Node<Task> x) {
+        if (x == null) {
+            return;
+        }
+        final int id = x.data.getId();
+        nodeMap.remove(id);
         final Node<Task> next = x.next;
         final Node<Task> prev = x.prev;
 
@@ -153,6 +137,5 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         x.data = null;
-        return element;
     }
 }
