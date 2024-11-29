@@ -29,11 +29,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     Node<Task> getLastNode() {
-        if (tail != null) {
             return tail;
-        } else {
-            return null;
-        }
     }
 
 
