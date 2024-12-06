@@ -7,20 +7,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Status;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
     private InMemoryTaskManager taskManager;
+
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         taskManager = new InMemoryTaskManager();
     }
 
     @Test
     void testToString() {
-
     }
 
     @Test
@@ -141,11 +142,11 @@ class InMemoryTaskManagerTest {
         taskManager.addNewEpic(epic1);
         final Epic savedEpic1 = taskManager.getEpicById(idEpic);
         assertNotNull(savedEpic1, "Задачи не возвращается.");
-        savedEpic1.setDescription(savedEpic1.getDescription()+" Update-1");
+        savedEpic1.setDescription(savedEpic1.getDescription() + " Update-1");
         taskManager.updateEpic(savedEpic1);
 
         final Epic savedEpic2 = taskManager.getEpicById(idEpic);
-        savedEpic2.setDescription(savedEpic1.getDescription()+" Update-2");
+        savedEpic2.setDescription(savedEpic1.getDescription() + " Update-2");
         taskManager.updateEpic(savedEpic2);
 
         assertNotNull(savedEpic2, "Задачи не возвращается.");
@@ -160,11 +161,11 @@ class InMemoryTaskManagerTest {
         taskManager.addNewSubtask(subtask1);
         final Subtask savedSubtask1 = taskManager.getSubtaskById(idSubtask);
         assertNotNull(savedSubtask1, "Задачи не возвращается.");
-        savedSubtask1.setDescription(savedSubtask1.getDescription()+" Update-1");
+        savedSubtask1.setDescription(savedSubtask1.getDescription() + " Update-1");
         taskManager.updateSubtask(savedSubtask1);
 
         final Subtask savedSubtask2 = taskManager.getSubtaskById(idSubtask);
-        savedSubtask2.setDescription(savedSubtask1.getDescription()+" Update-2");
+        savedSubtask2.setDescription(savedSubtask1.getDescription() + " Update-2");
         taskManager.updateSubtask(savedSubtask2);
 
         assertNotNull(savedSubtask2, "Задачи не возвращается.");
@@ -214,7 +215,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void test7checkId(){
+    void test7checkId() {
         Task task = new Task("T-15","DT-15",15, Status.NEW);
         final int taskId = taskManager.addNewTask(task);
         taskManager.updateTask(task);
@@ -224,7 +225,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void test8checkField(){
+    void test8checkField() {
         Task task = new Task("T-15","DT-15", Status.NEW);
         final int taskId = taskManager.addNewTask(task);
         taskManager.updateTask(task);
@@ -234,7 +235,6 @@ class InMemoryTaskManagerTest {
         assertEquals(task.getDescription(), savedTask.getDescription());
         assertEquals(task.getStatus(), savedTask.getStatus());
         assertEquals(task.getId(), savedTask.getId());
-
     }
 
     @Test
@@ -350,7 +350,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void test3E(){
+    void test3E() {
         Epic epic = new Epic("E-1","DE-1");
 
         final int epicId = taskManager.addNewEpic(epic);
@@ -363,7 +363,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void test4Subtask(){
+    void test4Subtask() {
         Subtask subtask = new Subtask("S-1","SE-1",Status.NEW);
 
         final int subtaskId = taskManager.addNewSubtask(subtask);
@@ -375,7 +375,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void test6findTask(){
+    void test6findTask() {
         Task task1 = new Task("name-1","des-1", Status.NEW);
         final int taskId = taskManager.addNewTask(task1);
         Epic epic = new Epic("E-1","DE-1");
@@ -388,5 +388,52 @@ class InMemoryTaskManagerTest {
         assertEquals(taskId, findedTask.getId(), "Значение поля не равны!");
     }
 
+    @Test
+    void removeSubtaskFromGetHistory() {
+        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+        assertEquals(0,inMemoryTaskManager.getHistory().size(), "Список не пустой");
+        Epic epic1 = new Epic("E0","DE0",0,Status.NEW);
+        inMemoryTaskManager.addNewEpic(epic1);
+        ArrayList<Subtask> arraySubtask = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Subtask subtask = new Subtask("S" + i,"DS" + i,i,Status.NEW,0);
+            inMemoryTaskManager.addNewSubtask(subtask);
+            arraySubtask.add(subtask);
+        }
+        epic1.setArraySubtask(arraySubtask);
+        inMemoryTaskManager.addNewEpic(epic1);
+        epic1 = new Epic("E6","DE6",6,Status.NEW);
+        inMemoryTaskManager.addNewEpic(epic1);
+        List<Task> listHistory = inMemoryTaskManager.getHistory();
+        Subtask subtaskAct = (Subtask) listHistory.get(0);
+        assertEquals(7,listHistory.size(), "Список не пустой");
+        assertEquals(1,subtaskAct.getId(), "Список не пустой");
+        assertTrue(listHistory.contains(subtaskAct));
 
+        inMemoryTaskManager.deleteSubtask(1);
+        listHistory = inMemoryTaskManager.getHistory();
+        assertEquals(6,listHistory.size(), "Список не пустой");
+        assertFalse(listHistory.contains(subtaskAct));
+    }
+
+    @Test
+    void removeEpicFromGetHistory() {
+        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+        assertEquals(0,inMemoryTaskManager.getHistory().size(), "Список не пустой");
+        Epic epic1 = new Epic("E0","DE0",0,Status.NEW);
+        inMemoryTaskManager.addNewEpic(epic1);
+        for (int i = 1; i <= 5; i++) {
+            Subtask subtask = new Subtask("S" + i,"DS" + i,i,Status.NEW,0);
+            inMemoryTaskManager.addNewSubtask(subtask);
+        }
+
+        inMemoryTaskManager.addNewEpic(epic1);
+        epic1 = new Epic("E6","DE6",6,Status.NEW);
+        inMemoryTaskManager.addNewEpic(epic1);
+
+        inMemoryTaskManager.deleteEpic(0);
+        List<Task> listHistory = inMemoryTaskManager.getHistory();
+        assertEquals(1,listHistory.size(), "Список не пустой");
+        assertEquals(6,listHistory.get(0).getId(), "Список не пустой");
+    }
 }

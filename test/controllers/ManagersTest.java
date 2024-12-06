@@ -2,10 +2,7 @@ package controllers;
 
 import model.Task;
 import org.junit.jupiter.api.Test;
-import service.Status;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
@@ -23,7 +20,7 @@ class ManagersTest {
     }
 
     @Test
-    void testManagersTest(){
+    void testManagersTest() {
         TaskManager taskManager = Managers.getDefault();
         Managers.testManagers(taskManager);
 
@@ -32,8 +29,11 @@ class ManagersTest {
         assertEquals(2, listTask.size(), "Неверное количество задач.");
 
         List<Task> listHistory = taskManager.getHistory();
+        assertEquals(7, listHistory.size(), "Неверное количество задач.");
         listHistory.get(5).setName("S3 ++++");
+        listHistory = taskManager.getHistory();
         assertNotNull(listHistory, "Задачи не возвращаются.");
-        assertEquals(6, listHistory.size(), "Неверное количество задач.");
+        assertEquals(7, listHistory.size(), "Неверное количество задач.");
+        assertEquals("name S6", listHistory.get(5).getName(), "Неверное количество задач.");
     }
 }

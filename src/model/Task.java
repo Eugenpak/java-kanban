@@ -9,7 +9,6 @@ public class Task {
     private int id;
     private Status status;
 
-
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
@@ -23,8 +22,8 @@ public class Task {
         this.id = task.getId();
         this.status = task.status;
     }
-    public Task() {
 
+    public Task() {
     }
 
     public Task(String name, String description, int id, Status status) {

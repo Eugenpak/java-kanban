@@ -37,7 +37,7 @@ class SubtaskTest {
         assertEquals(4,subtask1.getEpicId(), "Нет тот id Epic!");
     }
     @Test
-    void copySubtask(){
+    void copySubtask() {
         Subtask subtask1 = new Subtask("name-1","des-1",1, Status.NEW,3);
         Subtask subtask2 = subtask1.copySubtask();
         assertNotSame(subtask1,subtask2,"Один и тот же объект!");
