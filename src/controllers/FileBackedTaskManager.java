@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileBackedTaskManager extends InMemoryTaskManager{
+public class FileBackedTaskManager extends InMemoryTaskManager {
     private final String filename;
 
     public FileBackedTaskManager(String filename) {
@@ -183,7 +183,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager{
         };
     }
 
-    private Status fromStringStatus (String value) {
+    private Status fromStringStatus(String value) {
         return switch (value) {
             case "NEW" -> Status.NEW;
             case "IN_PROGRESS" -> Status.IN_PROGRESS;
