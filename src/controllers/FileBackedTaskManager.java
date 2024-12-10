@@ -9,8 +9,7 @@ import service.TypeTask;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,63 +149,47 @@ public class FileBackedTaskManager extends InMemoryTaskManager{
         StringBuilder strB = new StringBuilder();
         if (task instanceof Subtask) {
             Subtask subtask = (Subtask) task;
-            strB.append(subtask.getId());
-            strB.append(',');
-            strB.append(TypeTask.SUBTASK);
-            strB.append(',' + subtask.getName() + ',' );
-            strB.append(subtask.getStatus());
-            strB.append(',' + subtask.getDescription() + ',');
+            strB.append(subtask.getId()).append(',');
+            strB.append(TypeTask.SUBTASK).append(',');
+            strB.append(subtask.getName()).append(',');
+            strB.append(subtask.getStatus()).append(',');
+            strB.append(subtask.getDescription()).append(',');
             strB.append(subtask.getEpicId());
         } else if (task instanceof Epic) {
             Epic epic = (Epic) task;
-            strB.append(epic.getId());
-            strB.append(',');
-            strB.append(TypeTask.EPIC);
-            strB.append(',' + epic.getName() + ',' );
-            strB.append(epic.getStatus());
-            strB.append(',' + epic.getDescription());
-        } else if (task instanceof Task) {
-            strB.append(task.getId());
-            strB.append(',');
-            strB.append(TypeTask.TASK);
-            strB.append(',' + task.getName() + ',' );
-            strB.append(task.getStatus());
-            strB.append(',' + task.getDescription());
-        } else {
-            strB.append("");
+            strB.append(epic.getId()).append(',');
+            strB.append(TypeTask.EPIC).append(',');
+            strB.append(epic.getName()).append(',');
+            strB.append(epic.getStatus()).append(',');
+            strB.append(epic.getDescription());
+        } else if (task != null) {
+            strB.append(task.getId()).append(',');
+            strB.append(TypeTask.TASK).append(',');
+            strB.append(task.getName()).append(',');
+            strB.append(task.getStatus()).append(',');
+            strB.append(task.getDescription());
         }
         return strB.toString();
     }
 
     Task fromString(String value) {
         String[] str = value.split(",");
-        Task result;
-        switch (str[1]) {
-            case "TASK":
-                result = new Task(str[2],str[4],Integer.parseInt (str[0]),fromStringStatus(str[3]));
-                break;
-            case "EPIC":
-                result = new Epic(str[2],str[4],Integer.parseInt (str[0]),fromStringStatus(str[3]));
-                break;
-            case "SUBTASK":
-                result = new Subtask(str[2],str[4],Integer.parseInt (str[0]),
-                        fromStringStatus(str[3]),Integer.parseInt (str[5]));
-                break;
-            default:
-                result = null;
-                break;
-        }
-        return result;
+        return switch (str[1]) {
+            case "TASK" -> new Task(str[2], str[4], Integer.parseInt(str[0]), fromStringStatus(str[3]));
+            case "EPIC" -> new Epic(str[2], str[4], Integer.parseInt(str[0]), fromStringStatus(str[3]));
+            case "SUBTASK" -> new Subtask(str[2], str[4], Integer.parseInt(str[0]),
+                    fromStringStatus(str[3]), Integer.parseInt(str[5]));
+            default -> null;
+        };
     }
 
     private Status fromStringStatus (String value) {
-        if (value.equals("NEW")) {
-            return Status.NEW;
-        } else if (value.equals("IN_PROGRESS")) {
-            return Status.IN_PROGRESS;
-        } else {
-            return Status.DONE;
-        }
+        return switch (value) {
+            case "NEW" -> Status.NEW;
+            case "IN_PROGRESS" -> Status.IN_PROGRESS;
+            case "DONE" -> Status.DONE;
+            default -> null;
+        };
     }
 
     static FileBackedTaskManager loadFromFile(File file) {
@@ -233,22 +216,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager{
             System.out.println("Произошла ошибка во время чтения файла.");
         }
 
-
         for (Task elem : list) {
             if (elem instanceof Subtask) {
-                //Subtask tempSubtask = (Subtask) elem;
                 fileBackedTaskManager.addNewSubtask((Subtask) elem);
-                //fileBackedTaskManager.setEpicSubtask(tempSubtask.getEpicId(),tempSubtask.getId());
             } else if (elem instanceof Epic) {
                 if (fileBackedTaskManager.findId(elem.getId()) == null) {
                     fileBackedTaskManager.addNewEpic((Epic) elem);
                 }
-                //fileBackedTaskManager.updateEpic((Epic) elem);
-            } else if (elem instanceof Task) {
+            } else if (elem != null) {
                 fileBackedTaskManager.addNewTask(elem);
             }
         }
-        fileBackedTaskManager.getHistory();
         return fileBackedTaskManager;
     }
 
@@ -256,12 +234,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager{
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager("taskManager.CSV");
         fillManagers(fileBackedTaskManager);
         fileBackedTaskManager.getHistory();
-        File file = new File("awa/taskManager.CSV");
+        File file = new File("taskManager.CSV");
         FileBackedTaskManager fileBackedTaskManager2 = loadFromFile(file);
 
-        List<Task> fileBTM2 = fileBackedTaskManager2.getHistory();
+        System.out.println("Список задач до сохранения в файл.");
         List<Task> fileBTM1 = fileBackedTaskManager.getHistory();
-        fileBTM1.get(0).equals(fileBTM2.get(0));
+        for (Task elem : fileBTM1) {
+            System.out.println(elem.toString());
+        }
+        System.out.println();
+        System.out.println("Список задач после восстановления из файла.");
+        List<Task> fileBTM2 = fileBackedTaskManager2.getHistory();
+        for (Task elem : fileBTM2) {
+            System.out.println(elem.toString());
+        }
     }
 
     private static void fillManagers(TaskManager manager) {
