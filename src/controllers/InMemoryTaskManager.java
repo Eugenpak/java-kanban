@@ -28,6 +28,14 @@ public class InMemoryTaskManager implements TaskManager {
         return idCounter++;
     }
 
+    protected void setIdCounter(int counter) {
+        idCounter = counter;
+    }
+
+    protected int getIdCounterFile() {
+        return idCounter;
+    }
+
     @Override
     public String toString() {
         return "controllers.TaskManager{" +

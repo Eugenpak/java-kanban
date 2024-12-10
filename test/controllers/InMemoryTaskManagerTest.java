@@ -436,4 +436,43 @@ class InMemoryTaskManagerTest {
         assertEquals(1,listHistory.size(), "Список не пустой");
         assertEquals(6,listHistory.get(0).getId(), "Список не пустой");
     }
+
+    @Test
+    void addNewTaskMoreIdCounter() {
+        final Task task1 = new Task("name-1","des-1", 10,Status.NEW);
+
+        final int taskId = taskManager.addNewTask(task1);
+        taskManager.updateTask(task1);
+        final Task savedTask = taskManager.getTaskById(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(0, savedTask.getId(), "Задачи не совпадают.");
+        assertNotEquals(10, taskId);
+    }
+
+    @Test
+    void addNewTaskLessIdCounter() {
+        final Task task1 = new Task("name-1","des-1", -10,Status.NEW);
+
+        final int taskId = taskManager.addNewTask(task1);
+        taskManager.updateTask(task1);
+        final Task savedTask = taskManager.getTaskById(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(0, savedTask.getId(), "Задачи не совпадают.");
+        assertNotEquals(-10, taskId);
+    }
+
+    @Test
+    void addNewTaskIdEpic() {
+        final Epic epic1 = new Epic("N-E0","D-E0");
+        final int epicId = taskManager.addNewEpic(epic1);
+
+        final Task task1 = new Task("name-1","des-1", 0,Status.NEW);
+        final int taskId = taskManager.addNewTask(task1);
+
+        taskManager.updateTask(task1);
+        final Task savedTask = taskManager.getTaskById(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(1, savedTask.getId(), "Задачи не совпадают.");
+        assertNotEquals(0, taskId);
+    }
 }
