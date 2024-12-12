@@ -19,7 +19,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public FileBackedTaskManager(String filename) {
         this.filename = filename;
         try{
-            createFile(filename);
+            File file = new File(filename);
+            if (!(new File(filename).exists())) {
+                createFile(filename);
+            }
         } catch (IOException e) {
             throw new ManagerSaveException("Произошла ошибка во время создания файла (Конструктор). Проверь путь файла " + filename);
         }
