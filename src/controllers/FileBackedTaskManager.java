@@ -145,6 +145,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
+
+
     private String toString(Task task) {
         StringBuilder strB = new StringBuilder();
         if (task instanceof Subtask) {
@@ -213,7 +215,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Произошла ошибка во время чтения файла.");
+            throw new ManagerSaveException("Произошла ошибка во время чтения файла.");
         }
 
         for (Task elem : list) {
@@ -231,7 +233,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager("taskManager.CSV");
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager("awa/taskManager.CSV");
         fillManagers(fileBackedTaskManager);
         fileBackedTaskManager.getHistory();
         File file = new File("taskManager.CSV");
