@@ -389,7 +389,6 @@ class FileBackedTaskManagerTest {
             List<Task> list1 = fileBackedTaskManager.getHistory();
             assertEquals(0,list1.size(), "Список не пустой");
             assertEquals(0,fileBackedTaskManager.getIdCounterFile(), "Список не пустой");
-            fileBackedTaskManager.save();
 
             assertTrue(file.exists(), "Файл не существует.");
 
@@ -421,7 +420,6 @@ class FileBackedTaskManagerTest {
             List<Task> list1 = fileBackedTaskManager.getHistory();
             assertEquals(3,list1.size(), "Список не пустой");
             assertEquals(3,fileBackedTaskManager.getIdCounterFile(), "Список не пустой");
-            fileBackedTaskManager.save();
             assertTrue(file.exists(), "Файл не существует.");
         } catch (IOException e) {
             System.out.println(e.getMessage());

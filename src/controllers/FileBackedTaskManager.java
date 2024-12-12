@@ -18,6 +18,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public FileBackedTaskManager(String filename) {
         this.filename = filename;
+        try{
+            createFile(filename);
+        } catch (IOException e) {
+            throw new ManagerSaveException("Произошла ошибка во время создания файла (Конструктор). Проверь путь файла " + filename);
+        }
+    }
+
+    private void createFile(String filename) throws IOException {
+        FileWriter writer = new FileWriter(filename, StandardCharsets.UTF_8);
+        BufferedWriter bw = new BufferedWriter(writer);
+        bw.write("idCounter = " + getIdCounterFile() + "\n");
+        bw.write("id,type,name,status,description,epicId\n");
     }
 
     @Override
@@ -126,7 +138,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return epic;
     }
 
-    void save() {
+    private void save() {
         try (FileWriter writer = new FileWriter(filename, StandardCharsets.UTF_8);
              BufferedWriter bw = new BufferedWriter(writer)) {
             bw.write("idCounter = " + getIdCounterFile() + "\n");
@@ -144,8 +156,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerSaveException("Произошла ошибка во время записи файла.");
         }
     }
-
-
 
     private String toString(Task task) {
         StringBuilder strB = new StringBuilder();
@@ -233,7 +243,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager("awa/taskManager.CSV");
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager("taskManager.CSV");
         fillManagers(fileBackedTaskManager);
         fileBackedTaskManager.getHistory();
         File file = new File("taskManager.CSV");
