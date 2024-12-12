@@ -18,7 +18,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public FileBackedTaskManager(String filename) {
         this.filename = filename;
-        try{
+        try {
             File file = new File(filename);
             if (!(new File(filename).exists())) {
                 createFile(filename);
