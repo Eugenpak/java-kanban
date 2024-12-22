@@ -3,6 +3,9 @@ package model;
 import org.junit.jupiter.api.Test;
 import service.Status;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
@@ -82,5 +85,16 @@ class TaskTest {
         assertNotSame(task1,task2,"Один и тот же объект!");
         assertEquals(task1.hashCode(),task2.hashCode());
         assertEquals(task1.getId(),task2.getId());
+    }
+
+    @Test
+    void test2() {
+        Task task1 = new Task("name-1","des-1",1, Status.NEW, LocalDateTime.now(), Duration.ofMinutes(15));
+        Task task2 = new Task("name-2","des-2",1, Status.DONE, LocalDateTime.now(), Duration.ofMinutes(15));
+        assertNotSame(task1,task2,"Один и тот же объект!");
+        assertEquals(task1.hashCode(),task2.hashCode());
+        assertEquals(task1.getId(),task2.getId());
+        task1.getEndTime();
+        task1.getDuration();
     }
 }

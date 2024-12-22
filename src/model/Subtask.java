@@ -2,6 +2,9 @@ package model;
 
 import service.Status;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
     private int epicId;
 
@@ -28,6 +31,11 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
+    public Subtask(String name, String description, int id, Status status, int epicId, LocalDateTime startTime, Duration duration) {
+        super(name, description, id, status,startTime,duration);
+        this.epicId = epicId;
+    }
+
     @Override
     public String toString() {
             return "Subtask{" +
@@ -36,6 +44,8 @@ public class Subtask extends Task {
                     ", description='" + this.getDescription() + '\'' +
                     ", status=" + super.getStatus() +
                     ", epicId=" + epicId +
+                    ", startTime=" + super.getStartTime() +
+                    ", duration=" + super.getDuration() +
                     '}';
     }
 
@@ -67,6 +77,8 @@ public class Subtask extends Task {
         subtask.setEpicId(this.getEpicId());
         subtask.setStatus(this.getStatus());
         subtask.setId(this.getId());
+        subtask.setStartTime(this.getStartTime());
+        subtask.setDuration(this.getDuration());
         return subtask;
     }
 }

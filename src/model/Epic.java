@@ -1,10 +1,17 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import service.ComparatorTaskStartTime;
 import service.Status;
 
 public class Epic extends Task {
     private final ArrayList<Subtask> arraySubtask = new ArrayList<>();
+    private LocalDateTime endTime;
 
     public Epic() {
     }
@@ -53,8 +60,19 @@ public class Epic extends Task {
                     ", name='" + super.getName() + '\'' +
                     ", description='" + super.getDescription() + '\'' +
                     ", status=" + super.getStatus() +
+                    ", startTime=" + super.getStartTime() +
+                    ", duration=" + super.getDuration() +
+                    ", endTime=" + getEndTime() +
                     ", arraySubtask: " + arraySubtask +
                     "}";
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     @Override
@@ -78,6 +96,7 @@ public class Epic extends Task {
             super.setStatus(Status.NEW);
             return getStatus();
         }
+        updateLocalDateTime();
         Status temp = Status.NEW;
         for (Subtask subtask : arraySubtask) {
             if (!(subtask.getStatus() == Status.NEW)) {
@@ -102,5 +121,24 @@ public class Epic extends Task {
         }
         setStatus(Status.IN_PROGRESS);
         return getStatus();
+    }
+
+    void updateLocalDateTime() {
+        List<Subtask> result =arraySubtask
+                .stream()
+                .filter(s->s.getStartTime() != null)
+                .sorted((Subtask a, Subtask b)->{
+                    if (a.getStartTime().isAfter(b.getStartTime())) {
+                        return 1;
+                    } else if (a.getStartTime().isBefore(b.getStartTime())) {
+                        return -1;
+                    }
+                     return 0;})
+                .collect(Collectors.toList());
+        if (!result.isEmpty()) {
+            setStartTime(result.get(0).getStartTime());
+            setEndTime(result.get(result.size()-1).getEndTime());
+            setDuration(Duration.between(getStartTime(),getEndTime()));
+        }
     }
 }

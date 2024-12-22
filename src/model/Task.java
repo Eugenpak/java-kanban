@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import service.Status;
 
@@ -8,6 +10,9 @@ public class Task {
     private String description;
     private int id;
     private Status status;
+    private LocalDateTime startTime;
+    private Duration duration;
+
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -21,6 +26,8 @@ public class Task {
         this.description = task.description;
         this.id = task.getId();
         this.status = task.status;
+        this.startTime = task.startTime;
+        this.duration = task.duration;
     }
 
     public Task() {
@@ -33,12 +40,38 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String name, String description, int id, Status status, LocalDateTime startTime, Duration duration) {
+        this(name, description, id, status);
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public Duration getDuration() {
+        return duration;
     }
 
     @Override
@@ -48,8 +81,11 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
                 '}';
     }
+
 
     public void setStatus(Status status) {
         this.status = status;
@@ -82,7 +118,9 @@ public class Task {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id && Objects.equals(name, task.name) &&
-                Objects.equals(description, task.description) && status == task.status;
+                Objects.equals(description, task.description) && status == task.status &&
+                Objects.equals(startTime, task.startTime) &&
+                Objects.equals(duration, task.duration);
     }
 
     @Override
