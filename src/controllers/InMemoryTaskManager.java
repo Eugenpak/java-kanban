@@ -158,6 +158,8 @@ public class InMemoryTaskManager implements TaskManager {
             newTask.setName(task.getName());
             newTask.setDescription(task.getDescription());
             newTask.setStatus(task.getStatus());
+            newTask.setStartTime(task.getStartTime());
+            newTask.setDuration(task.getDuration());
             return newTask;
         }
         return null;

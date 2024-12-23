@@ -74,7 +74,7 @@ class SubtaskTest {
     @Test
     void testToString() {
         Subtask subtask = new Subtask("S7","DS7",7,Status.NEW,3);
-        String str="Subtask{id=7, name='S7', description='DS7', status=NEW, epicId=3}";
+        String str="Subtask{id=7, name='S7', description='DS7', status=NEW, epicId=3, startTime=null, duration=null}";
 
         assertNotNull(subtask, "Подзадача не пустая.");
         assertEquals(str,subtask.toString(), "Нет эта строка!");

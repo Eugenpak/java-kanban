@@ -19,6 +19,9 @@ public class Epic extends Task {
     public Epic(String name, String description) {
         super(name, description, Status.NEW);
     }
+    public Epic(String name, String description,LocalDateTime startTime, Duration duration) {
+        super(name, description, Status.NEW,startTime,duration);
+    }
 
     public Epic(Epic epic) {
         super(epic.getName(), epic.getDescription(), epic.getId(),epic.getStatus());
@@ -27,6 +30,9 @@ public class Epic extends Task {
         } else {
             for (Subtask elem : epic.getArraySubtask()) {
                 this.arraySubtask.add(elem);
+                this.setStartTime(epic.getStartTime());
+                this.setEndTime(epic.getEndTime());
+                this.setDuration(epic.getDuration());
             }
         }
     }
@@ -60,12 +66,15 @@ public class Epic extends Task {
                     ", name='" + super.getName() + '\'' +
                     ", description='" + super.getDescription() + '\'' +
                     ", status=" + super.getStatus() +
-                    ", startTime=" + super.getStartTime() +
-                    ", duration=" + super.getDuration() +
-                    ", endTime=" + getEndTime() +
+                    ", startTime=" + validLocalDateTime(getStartTime()) +
+                    ", duration=" + getDuration() +
+                    ", endTime=" + validLocalDateTime(getEndTime()) +
                     ", arraySubtask: " + arraySubtask +
                     "}";
+
     }
+
+
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;

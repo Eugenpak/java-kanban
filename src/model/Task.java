@@ -2,6 +2,7 @@ package model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import service.Status;
 
@@ -13,12 +14,22 @@ public class Task {
     private LocalDateTime startTime;
     private Duration duration;
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
+
 
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.id = -3;
+    }
+
+    public Task(String name, String description, Status status,LocalDateTime startTime, Duration duration) {
+        this(name,description,status);
+        this.id = -3;
+        this.startTime = startTime;
+        this.duration = duration;
+
     }
 
     public Task(Task task) {
@@ -46,7 +57,7 @@ public class Task {
         this.duration = duration;
     }
 
-    public LocalDateTime getEndTime() {
+    public LocalDateTime getEndTime() throws NullPointerException {
         return startTime.plus(duration);
     }
 
@@ -58,7 +69,7 @@ public class Task {
         this.id = id;
     }
 
-    public LocalDateTime getStartTime() {
+    public LocalDateTime getStartTime() throws NullPointerException {
         return startTime;
     }
 
@@ -81,9 +92,25 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
-                ", startTime=" + startTime +
-                ", duration=" + duration +
+                ", startTime=" + validLocalDateTime(startTime) +
+                ", duration=" + validDuration(duration) +
                 '}';
+    }
+
+    public String validLocalDateTime(LocalDateTime value) {
+        try {
+            return value.format(formatter);
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public String validDuration(Duration value) {
+        try {
+            return Long.toString(value.toMinutes());
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 

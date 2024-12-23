@@ -97,7 +97,8 @@ class EpicTest {
     void testToString() {
         Epic epic = new Epic("name-1","des-1",1, Status.NEW);
         assertNotNull(epic, "Задача не пустая.");
-        String str = "Epic{Id=1, name='name-1', description='des-1', status=NEW, arraySubtask: []}";
+        String str = "Epic{Id=1, name='name-1', description='des-1', status=NEW, startTime=null,"
+                   + " duration=null, endTime=null, arraySubtask: []}";
         assertEquals(str,epic.toString(), "Не верная строка!");
     }
 
