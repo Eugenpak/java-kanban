@@ -7,13 +7,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Status;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+//import java.util.concurrent.StructuredTaskScope;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
-    private InMemoryTaskManager taskManager;
+class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
+    //private InMemoryTaskManager taskManager;
 
     @BeforeEach
     public void beforeEach() {
@@ -475,4 +478,149 @@ class InMemoryTaskManagerTest {
         assertEquals(1, savedTask.getId(), "Задачи не совпадают.");
         assertNotEquals(0, taskId);
     }
+
+
+    @Test
+    void addTaskListPrioritized() {
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(9);
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(20),durationT);
+        taskManager.addNewTask(task1);
+        Subtask subtask = new Subtask("N-S2","D-S2",Status.NEW,start.plusMinutes(29),durationT);
+        taskManager.addNewSubtask(subtask);
+        Subtask subtask1 = new Subtask("N-S3","D-S3",Status.DONE,start.plusMinutes(30),durationT);
+        taskManager.addNewSubtask(subtask1);
+        Task task2 = new Task("N-T4","D-T4",Status.NEW,start.plusMinutes(50),Duration.ZERO);
+        taskManager.addNewTask(task2);
+        LocalDateTime startBug = LocalDateTime.parse(" 2024-07-07 08:00",task.getFormatter());
+        Duration durationBug = Duration.ZERO;
+        Task task3 = new Task("N-T5","D-T5",Status.NEW, startBug,durationBug);
+        taskManager.addNewTask(task3);
+
+        subtask.setName("N-S2 after update");
+        taskManager.updateSubtask(subtask1);
+        task1.setStartTime(start.minusMinutes(30));
+        taskManager.updateTask(task1);
+
+        //taskManager.deleteSubtask(subtask.getId());
+        //taskManager.deleteTask(task1.getId());
+        //taskManager.deleteTask(5);
+
+
+        List<Task> test = taskManager.getPrioritizedTasks();
+        for (Task elem : test) {
+            System.out.println(elem);
+        }
+    }
+
+    @Test
+    void checkIntersectsFalse() {
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        List<Task> listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(0,listPrioritizedTasks.size(), "Список не пустой");
+
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(20),durationT);
+        taskManager.addNewTask(task1);
+
+        listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(2,listPrioritizedTasks.size(), "Список не пустой");
+        String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(listPrioritizedTasks.get(0).toString().contains(str));
+    }
+
+    @Test
+    void checkIntersectsTrue() {
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        List<Task> listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(0,listPrioritizedTasks.size(), "Список не пустой");
+
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(5),durationT);
+        taskManager.addNewTask(task1);
+
+        listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(1,listPrioritizedTasks.size(), "Список не пустой");
+        String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(listPrioritizedTasks.get(0).toString().contains(str));
+    }
+
+    @Test
+    void checkIntersectsFalseBorderline() {
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        List<Task> listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(0,listPrioritizedTasks.size(), "Список не пустой");
+
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(10),durationT);
+        taskManager.addNewTask(task1);
+
+        listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(2,listPrioritizedTasks.size(), "Список не пустой");
+        String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(listPrioritizedTasks.get(0).toString().contains(str));
+    }
+
+    @Test
+    void checkIntersectsTrueDuration0() { //Borderline
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        List<Task> listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(0,listPrioritizedTasks.size(), "Список не пустой");
+
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(5),Duration.ZERO);
+        taskManager.addNewTask(task1);
+
+        listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(1,listPrioritizedTasks.size(), "Список не пустой");
+        String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(listPrioritizedTasks.get(0).toString().contains(str));
+    }
+
+    @Test
+    void checkIntersectsFalseDuration0BorderlineEndTime() { //Borderline
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        List<Task> listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(0,listPrioritizedTasks.size(), "Список не пустой");
+
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(10),Duration.ZERO);
+        taskManager.addNewTask(task1);
+
+        listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(2,listPrioritizedTasks.size(), "Список не пустой");
+        String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(listPrioritizedTasks.get(0).toString().contains(str));
+    }
+
+    @Test
+    void checkIntersectsTrueDuration0BorderlineStartTime() { //Borderline
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        List<Task> listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(0,listPrioritizedTasks.size(), "Список не пустой");
+
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(0),Duration.ZERO);
+        taskManager.addNewTask(task1);
+
+        listPrioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(1,listPrioritizedTasks.size(), "Список не пустой");
+        String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(listPrioritizedTasks.get(0).toString().contains(str));
+    }
+
 }

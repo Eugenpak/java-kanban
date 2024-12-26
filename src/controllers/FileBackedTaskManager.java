@@ -152,6 +152,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             bw.write("idCounter = " + getIdCounterFile() + "\n");
             bw.write("id,type,name,status,description,startTime,endTime,duration,epicId\n");
             List<Task> taskList = getHistory();
+
             for (Task elem : getListEpic()) {
                 bw.write(toString(elem) + '\n');
             }
@@ -244,7 +245,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Duration fromStringDuration(String value) {
         return switch (value) {
-            case "null" -> null;
+            case "null" -> Duration.ZERO;
             default -> Duration.ofMinutes(Long.parseLong(value));
         };
     }
@@ -296,15 +297,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         System.out.println("Список задач до сохранения в файл.");
         List<Task> fileBTM1 = fileBackedTaskManager.getHistory();
+        /*
         for (Task elem : fileBTM1) {
             System.out.println(elem.toString());
         }
+        */
+        fileBTM1.forEach(elem->System.out.println(elem.toString()));
         System.out.println();
         System.out.println("Список задач после восстановления из файла.");
         List<Task> fileBTM2 = fileBackedTaskManager2.getHistory();
+        /*
         for (Task elem : fileBTM2) {
             System.out.println(elem.toString());
         }
+        */
+        fileBTM2.forEach(elem->System.out.println(elem.toString()));
     }
 
     private static void fillManagers(TaskManager manager) {

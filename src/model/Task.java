@@ -16,6 +16,10 @@ public class Task {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
 
+    public DateTimeFormatter getFormatter() {
+        return formatter;
+    }
+
 
     public Task(String name, String description, Status status) {
         this.name = name;

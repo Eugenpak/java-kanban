@@ -10,12 +10,25 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Status;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
+    @BeforeEach
+    public void beforeEach() {
+        String strFile = "";
+        try {
+            File file = File.createTempFile("_test_", "_beforeEach.csv");
+            strFile = file.toString();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        taskManager = new FileBackedTaskManager(strFile);
+    }
 
     @Test
     void updateTask() {

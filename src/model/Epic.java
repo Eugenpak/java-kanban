@@ -25,15 +25,17 @@ public class Epic extends Task {
 
     public Epic(Epic epic) {
         super(epic.getName(), epic.getDescription(), epic.getId(),epic.getStatus());
-        if (epic.getArraySubtask() == null) {
-            //
-        } else {
+        setStartTime(epic.getStartTime());
+        setEndTime(epic.getEndTime());
+        setDuration(epic.getDuration());
+        if (epic.getArraySubtask() != null) {
+            /*
             for (Subtask elem : epic.getArraySubtask()) {
                 this.arraySubtask.add(elem);
-                this.setStartTime(epic.getStartTime());
-                this.setEndTime(epic.getEndTime());
-                this.setDuration(epic.getDuration());
             }
+            */
+            //epic.getArraySubtask().forEach(elem->arraySubtask.add(elem));
+            arraySubtask.addAll(epic.getArraySubtask());
         }
     }
 
@@ -95,9 +97,12 @@ public class Epic extends Task {
 
     public void setArraySubtask(ArrayList<Subtask> arraySubtask) {
         this.arraySubtask.clear();
+        /*
         for (Subtask elem : arraySubtask) {
             this.arraySubtask.add(elem.copySubtask());
         }
+        */
+        arraySubtask.forEach(elem->this.arraySubtask.add(elem.copySubtask()));
     }
 
     public Status updateStatus() {
