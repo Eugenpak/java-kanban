@@ -148,7 +148,7 @@ public class Epic extends Task {
                     } else if (a.getStartTime().isBefore(b.getStartTime())) {
                         return -1;
                     }
-                     return 0; } )
+                     return 0; })
                 .collect(Collectors.toList());
         if (!result.isEmpty()) {
             setStartTime(result.get(0).getStartTime());
