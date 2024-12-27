@@ -9,6 +9,9 @@ import service.Status;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,17 +48,22 @@ class HistoryManagerTest {
         HistoryManager historyManager = new InMemoryHistoryManager();
         assertEquals(0, historyManager.getHistory().size(), "Список не пустой");
 
-        for (int i = 0; i < 3; i++) {
+        /*
+        for (int i = 0; i < 5; i++) {
             historyManager.add(new Task("N-T" + i, "D-T" + i, i, Status.NEW));
         }
-        historyManager.add(new Epic("N-E3", "D-E3", 3, Status.NEW));
+        // */
+        Stream.of(0,1,2,3,4)
+                .map(num -> new Task("N-T" + num, "D-T" + num, num, Status.NEW))
+                .forEach(historyManager::add);
+        historyManager.add(new Epic("N-E3", "D-E3", 5, Status.NEW));
 
         assertNotNull(historyManager, "История не пустая.");
-        assertEquals(4, historyManager.getHistory().size(), "Список не пустой");
+        assertEquals(6, historyManager.getHistory().size(), "Список не пустой");
         historyManager.remove(0);
 
         assertNotNull(historyManager, "История не пустая.");
-        assertEquals(3, historyManager.getHistory().size(), "Список не пустой");
+        assertEquals(5, historyManager.getHistory().size(), "Список не пустой");
     }
 
     @Test

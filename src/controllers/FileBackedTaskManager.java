@@ -160,13 +160,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (Task elem : taskList) {
                 bw.write(toString(elem) + '\n');
             }
-
         } catch (IOException e) {
             throw new ManagerSaveException("Произошла ошибка во время записи файла.");
         }
     }
 
-    private String toString(Task task) {
+    private String toString(Task task) throws NullPointerException {
         StringBuilder strB = new StringBuilder();
         if (task instanceof Subtask) {
             Subtask subtask = (Subtask) task;
@@ -179,7 +178,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 strB.append("null,null,");
             } else { */
                 strB.append(task.validLocalDateTime(subtask.getStartTime())).append(',');
-                strB.append(task.validLocalDateTime(subtask.getEndTime())).append(',');
+                try {
+                    strB.append(task.validLocalDateTime(subtask.getEndTime())).append(',');
+                } catch (NullPointerException e) {
+                    strB.append("null,");
+                }
             //}
             /*if (subtask.getDuration() == null) {
                 strB.append("null,");
@@ -208,13 +211,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             strB.append(task.getStatus()).append(',');
             strB.append(task.getDescription()).append(',');
             strB.append(task.validLocalDateTime(task.getStartTime())).append(',');
-            strB.append(task.validLocalDateTime(task.getEndTime())).append(',');
+            try {
+                strB.append(task.validLocalDateTime(task.getEndTime())).append(',');
+            } catch (NullPointerException e) {
+                strB.append("null,");
+            }
             strB.append(task.validDuration(task.getDuration()));
         }
         return strB.toString();
     }
 
-    Task fromString(String value) {
+    Task fromString(String value) throws IOException {
         String[] str = value.split(",");
         return switch (str[1]) {
             case "TASK" -> new Task(str[2], str[4], Integer.parseInt(str[0]), fromStringStatus(str[3]),
@@ -223,16 +230,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             case "SUBTASK" -> new Subtask(str[2], str[4], Integer.parseInt(str[0]),
                     fromStringStatus(str[3]), Integer.parseInt(str[8]),fromStringLocalDateTime(str[5]),
                     fromStringDuration(str[7]));
-            default -> null;
+            default -> throw new IOException("Не правильный тип (TypeTask).");
         };
     }
 
-    private Status fromStringStatus(String value) {
+    private Status fromStringStatus(String value) throws IOException {
         return switch (value) {
             case "NEW" -> Status.NEW;
             case "IN_PROGRESS" -> Status.IN_PROGRESS;
             case "DONE" -> Status.DONE;
-            default -> null;
+            default -> throw new IOException("Не правильный тип (Status).");
         };
     }
 
@@ -271,7 +278,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("Произошла ошибка во время чтения файла.");
+            throw new ManagerSaveException("Произошла ошибка во время чтения файла." + e.getMessage());
         }
 
         for (Task elem : list) {

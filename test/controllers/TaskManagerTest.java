@@ -97,7 +97,5 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic findedEpic = taskManager.getEpicById(subtask.getEpicId());
         assertEquals(Status.NEW,findedEpic.getStatus(), "Статус не одинаковый!");
         assertEquals(0,findedEpic.getId(), "id Epic не одинаковый!");
-
     }
-
 }

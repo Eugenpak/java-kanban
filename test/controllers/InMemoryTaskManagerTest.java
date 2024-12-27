@@ -505,14 +505,22 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         taskManager.updateTask(task1);
 
         //taskManager.deleteSubtask(subtask.getId());
+        //taskManager.deleteSubtasks();
         //taskManager.deleteTask(task1.getId());
         //taskManager.deleteTask(5);
+        taskManager.deleteTasks();
+        subtask1.setStartTime(subtask1.getStartTime().minusMinutes(30));
+        taskManager.addNewSubtask(subtask1);
 
-
+        /*
         List<Task> test = taskManager.getPrioritizedTasks();
         for (Task elem : test) {
             System.out.println(elem);
         }
+        */
+        System.out.println();
+        taskManager.getPrioritizedTasks().forEach(System.out::println);
+
     }
 
     @Test

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Status;
@@ -596,5 +597,110 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         Epic epic2 = (Epic) list1.get(3);
         assertEquals(2,epic2.getId(), "id разные.");
         assertTrue(epic2.toString().contains("Epic{Id=2, name='N-E2', description='D-E2', status=IN_PROGRESS"));
+    }
+
+    @Test
+    void testExceptionLoadFromFileSprint8Test4() {
+        exceptions.ManagerSaveException thrown = Assertions.assertThrows(exceptions.ManagerSaveException.class,
+                () -> {
+                    FileBackedTaskManager.loadFromFile(new File("!!!/!!.!!"));
+        }, "exceptions.ManagerSaveException was expected");
+
+        Assertions.assertEquals("Произошла ошибка во время создания файла (Конструктор). " +
+                "Проверь путь файла !!!\\!!.!!", thrown.getMessage());
+    }
+
+    @Test
+    void testExceptionSaveTaskIsNullSprint8Test4() {
+        assertDoesNotThrow(() -> taskManager.addNewTask(new Task()));
+        /*
+        exceptions.ManagerSaveException thrown = Assertions.assertThrows(exceptions.ManagerSaveException.class,
+                () -> {
+            taskManager.addNewTask(new Task());
+                }, "exceptions.ManagerSaveException was expected");
+        Assertions.assertEquals("Произошла ошибка во время записи файла.Cannot invoke " +
+                "\"java.time.LocalDateTime.plus(java.time.temporal.TemporalAmount)\" because \"this.startTime\" " +
+                "is null", thrown.getMessage());
+         */
+    }
+
+    @Test
+    void testExceptionSaveEpicIsNullSprint8Test4() {
+        assertDoesNotThrow(() -> taskManager.addNewEpic(new Epic()));
+    }
+
+    @Test
+    void testExceptionSaveSubtaskIsNullSprint8Test4() {
+        assertDoesNotThrow(() -> taskManager.addNewSubtask(new Subtask()));
+        /*
+        exceptions.ManagerSaveException thrown = Assertions.assertThrows(exceptions.ManagerSaveException.class,
+                () -> {
+                    taskManager.addNewSubtask(new Subtask());
+                }, "exceptions.ManagerSaveException was expected");
+        Assertions.assertEquals("Ошибка при записи файла (подготовка данных).Cannot invoke " +
+                "\"java.time.LocalDateTime.plus(java.time.temporal.TemporalAmount)\" because \"this.startTime\" " +
+                "is null", thrown.getMessage());
+
+         */
+    }
+
+    @Test
+    void testExceptionLoadFromFileBugTypeTaskSprint8Test4() {
+        String dataFile =
+                "idCounter = 1\n" +
+                        "id,type,name,status,description,startTime,endTime,duration,epicId\n" +
+                        "id,type,name,status,description,startTime,endTime,duration,epicId\n" +
+                        "0,TASK-FAIL,N-T0,NEW,D-T0,null,null,null\n";
+
+        String fileSave ="";
+        try {
+            File file = File.createTempFile("_test_","_loadFromFileTasks.csv");
+            fileSave = file.toString();
+            FileWriter writer = new FileWriter(fileSave, StandardCharsets.UTF_8);
+            BufferedWriter bw = new BufferedWriter(writer);
+            bw.write(dataFile);
+            bw.close();
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        final String fileSave1 = fileSave;
+        exceptions.ManagerSaveException thrown = Assertions.assertThrows(exceptions.ManagerSaveException.class,
+                () -> {
+                    FileBackedTaskManager.loadFromFile(new File(fileSave1));
+                }, "exceptions.ManagerSaveException was expected");
+
+        Assertions.assertEquals("Произошла ошибка во время чтения файла.Не правильный тип" +
+                " (TypeTask).", thrown.getMessage());
+    }
+
+    @Test
+    void testExceptionLoadFromFileBugStatusSprint8Test4() {
+        String dataFile =
+                "idCounter = 1\n" +
+                        "id,type,name,status,description,startTime,endTime,duration,epicId\n" +
+                        "id,type,name,status,description,startTime,endTime,duration,epicId\n" +
+                        "0,TASK,N-T0,NEW-FAIL,D-T0,null,null,null\n";
+
+        String fileSave ="";
+        try {
+            File file = File.createTempFile("_test_","_loadFromFileTasks.csv");
+            fileSave = file.toString();
+            FileWriter writer = new FileWriter(fileSave, StandardCharsets.UTF_8);
+            BufferedWriter bw = new BufferedWriter(writer);
+            bw.write(dataFile);
+            bw.close();
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        final String fileSave1 = fileSave;
+        exceptions.ManagerSaveException thrown = Assertions.assertThrows(exceptions.ManagerSaveException.class,
+                () -> {
+                    FileBackedTaskManager.loadFromFile(new File(fileSave1));
+                }, "exceptions.ManagerSaveException was expected");
+
+        Assertions.assertEquals("Произошла ошибка во время чтения файла.Не правильный тип" +
+                " (Status).", thrown.getMessage());
     }
 }

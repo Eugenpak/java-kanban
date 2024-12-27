@@ -115,32 +115,53 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(Integer id) {
+        Optional<Task> t = Optional.ofNullable(mapTask.get(id));
+        if (t.isPresent()) {
+            historyManager.add(t.get());
+            return t.get();
+        } else return null;
+        /*
         if (mapTask.containsKey(id)) {
             Task task = mapTask.get(id);
             historyManager.add(task);
             return task;
         }
         return null;
+        */
     }
 
     @Override
     public Subtask getSubtaskById(Integer id) {
+        Optional<Subtask> s = Optional.ofNullable(mapSubtask.get(id));
+        if (s.isPresent()) {
+            historyManager.add(s.get());
+            return s.get();
+        } else return null;
+        /*
         if (mapSubtask.containsKey(id)) {
             Subtask subtask = mapSubtask.get(id);
             historyManager.add(subtask);
             return subtask;
         }
         return null;
+        */
     }
 
     @Override
     public Epic getEpicById(Integer id) {
+        Optional<Epic> e = Optional.ofNullable(mapEpic.get(id));
+        if (e.isPresent()) {
+            historyManager.add(e.get());
+            return e.get();
+        } else return null;
+        /*
         if (mapEpic.containsKey(id)) {
             Epic epic = mapEpic.get(id);
             historyManager.add(epic);
             return epic;
         }
         return null;
+        */
     }
 
     @Override
@@ -223,8 +244,9 @@ public class InMemoryTaskManager implements TaskManager {
                 .filter(t->checkIntersects(task,t))
                 .findFirst();
         taskOptional.ifPresentOrElse(x->
-                        System.out.println("Задача с id=" + task.getId() +
-                        " пересекает с Task id="+x.getId() + " startTime=" + x.getStartTime() + ", endTime=" +
+                        System.out.println(task.getClass().getName().substring(6) + " '" + task.getName() +
+                        "'(id=" + task.getId() + ")" + " пересекает " + x.getClass().getName().substring(6) +
+                        " '" + x.getName() + "'(id="+x.getId() + ") startTime=" + x.getStartTime() + ", endTime=" +
                         x.getStartTime().plus(x.getDuration())),
                 () -> treeTask.add(task));
         }
@@ -360,6 +382,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         */
         mapTask.values().forEach(task->historyManager.remove(task.getId()));
+        mapTask.values().forEach(task->treeTask.remove(task));
         mapTask.clear();
     }
 
@@ -378,6 +401,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         */
         mapSubtask.values().forEach(subtask->historyManager.remove(subtask.getId()));
+        mapSubtask.values().forEach(task->treeTask.remove(task));
         mapSubtask.clear();
     }
 
@@ -396,6 +420,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         */
         mapSubtask.values().forEach(subtask->historyManager.remove(subtask.getId()));
+        mapSubtask.values().forEach(subtask->treeTask.remove(subtask));
         mapSubtask.clear();
     }
 
