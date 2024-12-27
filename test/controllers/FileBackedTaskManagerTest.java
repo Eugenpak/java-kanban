@@ -603,11 +603,11 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     void testExceptionLoadFromFileSprint8Test4() {
         exceptions.ManagerSaveException thrown = Assertions.assertThrows(exceptions.ManagerSaveException.class,
                 () -> {
-                    FileBackedTaskManager.loadFromFile(new File("!!!/!!.!!"));
+                    FileBackedTaskManager.loadFromFile(new File(""));
         }, "exceptions.ManagerSaveException was expected");
 
         Assertions.assertEquals("Произошла ошибка во время создания файла (Конструктор). " +
-                "Проверь путь файла !!!\\!!.!!", thrown.getMessage());
+                "Проверь путь файла ", thrown.getMessage());
     }
 
     @Test
