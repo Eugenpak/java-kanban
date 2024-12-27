@@ -416,7 +416,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         */
         getListEpic().forEach(elem -> {
-            elem.getArraySubtask().clear(); updateEpic(elem); } );
+            elem.getArraySubtask().clear(); updateEpic(elem); });
         /*
         for (Subtask subtask : mapSubtask.values()) {
             historyManager.remove(subtask.getId());
