@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import service.ComparatorTaskStartTime;
+
 import service.Status;
 
 public class Epic extends Task {
@@ -19,6 +19,7 @@ public class Epic extends Task {
     public Epic(String name, String description) {
         super(name, description, Status.NEW);
     }
+
     public Epic(String name, String description,LocalDateTime startTime, Duration duration) {
         super(name, description, Status.NEW,startTime,duration);
     }
@@ -102,7 +103,7 @@ public class Epic extends Task {
             this.arraySubtask.add(elem.copySubtask());
         }
         */
-        arraySubtask.forEach(elem->this.arraySubtask.add(elem.copySubtask()));
+        arraySubtask.forEach(elem -> this.arraySubtask.add(elem.copySubtask()));
     }
 
     public Status updateStatus() {
@@ -138,20 +139,20 @@ public class Epic extends Task {
     }
 
     void updateLocalDateTime() {
-        List<Subtask> result =arraySubtask
+        List<Subtask> result = arraySubtask
                 .stream()
-                .filter(s->s.getStartTime() != null)
-                .sorted((Subtask a, Subtask b)->{
+                .filter(s -> s.getStartTime() != null)
+                .sorted((Subtask a, Subtask b) -> {
                     if (a.getStartTime().isAfter(b.getStartTime())) {
                         return 1;
                     } else if (a.getStartTime().isBefore(b.getStartTime())) {
                         return -1;
                     }
-                     return 0;})
+                     return 0; } )
                 .collect(Collectors.toList());
         if (!result.isEmpty()) {
             setStartTime(result.get(0).getStartTime());
-            setEndTime(result.get(result.size()-1).getEndTime());
+            setEndTime(result.get(result.size() - 1).getEndTime());
             setDuration(Duration.between(getStartTime(),getEndTime()));
         }
     }
