@@ -309,7 +309,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             System.out.println(elem.toString());
         }
         */
-        fileBTM1.forEach(elem->System.out.println(elem.toString()));
+        fileBTM1.forEach(elem -> System.out.println(elem.toString()));
         System.out.println();
         System.out.println("Список задач после восстановления из файла.");
         List<Task> fileBTM2 = fileBackedTaskManager2.getHistory();
@@ -318,7 +318,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             System.out.println(elem.toString());
         }
         */
-        fileBTM2.forEach(elem->System.out.println(elem.toString()));
+        fileBTM2.forEach(elem -> System.out.println(elem.toString()));
     }
 
     private static void fillManagers(TaskManager manager) {
