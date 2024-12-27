@@ -309,7 +309,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         */
         epic.getArraySubtask().forEach(elem -> {
-             addNewSubtask(elem); elem.setEpicId(id); } );
+             addNewSubtask(elem); elem.setEpicId(id); });
         historyManager.add(epic);
         return id;
     }
@@ -355,7 +355,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
             */
             epic.getArraySubtask().forEach(elem -> {
-                mapSubtask.remove(elem.getId());historyManager.remove(elem.getId()); } );
+                mapSubtask.remove(elem.getId());historyManager.remove(elem.getId()); });
             mapEpic.remove(id);
             historyManager.remove(id);
         }
