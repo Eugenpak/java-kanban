@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
-
 import service.Status;
 
 public class Task {
@@ -21,7 +20,6 @@ public class Task {
     public static DateTimeFormatter getFormatter() {
         return formatter;
     }
-
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -140,7 +138,6 @@ public class Task {
     }
 
     public void setDescription(String description) {
-
         this.description = description;
     }
 

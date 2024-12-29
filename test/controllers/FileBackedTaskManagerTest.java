@@ -8,15 +8,12 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Status;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
@@ -149,7 +146,6 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     @Test
@@ -415,7 +411,6 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
             assertEquals(0, findEpicId, "Список не пустой");
 
             assertNull(fileBackedTaskManager.getEpicById(100), "Вернул не null!");
-            //fileBackedTaskManager.getEpicById(100).getId();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -494,10 +489,9 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
             fileSave = file.toString();
             FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file.toString());
 
-            Subtask subtask = new Subtask("N-S2", "D-S2", Status.IN_PROGRESS, start.plusMinutes(15), durationTest);
-            //subtask.setEpicId(epicId);
+            Subtask subtask = new Subtask("N-S2", "D-S2", Status.IN_PROGRESS,
+                    start.plusMinutes(15), durationTest);
             fileBackedTaskManager.addNewSubtask(subtask);
-            //fileBackedTaskManager.updateEpic(epic);
 
             List<Task> list1 = fileBackedTaskManager.getHistory();
             assertEquals(1, list1.size(), "Список не пустой");
@@ -614,15 +608,6 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     @Test
     void testExceptionSaveTaskIsNullSprint8Test4() {
         assertDoesNotThrow(() -> taskManager.addNewTask(new Task()));
-        /*
-        exceptions.ManagerSaveException thrown = Assertions.assertThrows(exceptions.ManagerSaveException.class,
-                () -> {
-            taskManager.addNewTask(new Task());
-                }, "exceptions.ManagerSaveException was expected");
-        Assertions.assertEquals("Произошла ошибка во время записи файла.Cannot invoke " +
-                "\"java.time.LocalDateTime.plus(java.time.temporal.TemporalAmount)\" because \"this.startTime\" " +
-                "is null", thrown.getMessage());
-         */
     }
 
     @Test
@@ -633,16 +618,6 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     @Test
     void testExceptionSaveSubtaskIsNullSprint8Test4() {
         assertDoesNotThrow(() -> taskManager.addNewSubtask(new Subtask()));
-        /*
-        exceptions.ManagerSaveException thrown = Assertions.assertThrows(exceptions.ManagerSaveException.class,
-                () -> {
-                    taskManager.addNewSubtask(new Subtask());
-                }, "exceptions.ManagerSaveException was expected");
-        Assertions.assertEquals("Ошибка при записи файла (подготовка данных).Cannot invoke " +
-                "\"java.time.LocalDateTime.plus(java.time.temporal.TemporalAmount)\" because \"this.startTime\" " +
-                "is null", thrown.getMessage());
-
-         */
     }
 
     @Test

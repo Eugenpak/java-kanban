@@ -1,7 +1,6 @@
 package model;
 
 import service.Status;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 

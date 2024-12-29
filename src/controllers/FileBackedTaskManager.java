@@ -174,21 +174,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             strB.append(subtask.getName()).append(',');
             strB.append(subtask.getStatus()).append(',');
             strB.append(subtask.getDescription()).append(',');
-            /*if (subtask.getStartTime() == null) {
-                strB.append("null,null,");
-            } else { */
-                strB.append(task.validLocalDateTime(subtask.getStartTime())).append(',');
-                try {
-                    strB.append(task.validLocalDateTime(subtask.getEndTime())).append(',');
-                } catch (NullPointerException e) {
-                    strB.append("null,");
-                }
-            //}
-            /*if (subtask.getDuration() == null) {
+            strB.append(task.validLocalDateTime(subtask.getStartTime())).append(',');
+            try {
+                strB.append(task.validLocalDateTime(subtask.getEndTime())).append(',');
+            } catch (NullPointerException e) {
                 strB.append("null,");
-            } else { */
-                strB.append(task.validDuration(subtask.getDuration())).append(',');
-            //}
+            }
+            strB.append(task.validDuration(subtask.getDuration())).append(',');
             strB.append(subtask.getEpicId());
         } else if (task instanceof Epic) {
             Epic epic = (Epic) task;
@@ -197,13 +189,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             strB.append(epic.getName()).append(',');
             strB.append(epic.getStatus()).append(',');
             strB.append(epic.getDescription()).append(',');
-            /*if (epic.getStartTime() == null) {
-                strB.append("null,null,null");
-            } else { */
-                strB.append(task.validLocalDateTime(epic.getStartTime())).append(',');
-                strB.append(task.validLocalDateTime(epic.getEndTime())).append(',');
-                strB.append(task.validDuration(epic.getDuration()));
-
+            strB.append(task.validLocalDateTime(epic.getStartTime())).append(',');
+            strB.append(task.validLocalDateTime(epic.getEndTime())).append(',');
+            strB.append(task.validDuration(epic.getDuration()));
         } else if (task != null) {
             strB.append(task.getId()).append(',');
             strB.append(TypeTask.TASK).append(',');
@@ -270,7 +258,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     fileBackedTaskManager.setIdCounter(Integer.parseInt(str[1]));
                 }
             }
-
             while (br.ready()) {
                 String line = br.readLine();
                 if (!line.equals("id,type,name,status,description,startTime,endTime,duration,epicId")) {
@@ -304,20 +291,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         System.out.println("Список задач до сохранения в файл.");
         List<Task> fileBTM1 = fileBackedTaskManager.getHistory();
-        /*
-        for (Task elem : fileBTM1) {
-            System.out.println(elem.toString());
-        }
-        */
+
         fileBTM1.forEach(elem -> System.out.println(elem.toString()));
         System.out.println();
         System.out.println("Список задач после восстановления из файла.");
         List<Task> fileBTM2 = fileBackedTaskManager2.getHistory();
-        /*
-        for (Task elem : fileBTM2) {
-            System.out.println(elem.toString());
-        }
-        */
+
         fileBTM2.forEach(elem -> System.out.println(elem.toString()));
     }
 

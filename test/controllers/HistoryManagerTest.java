@@ -48,11 +48,6 @@ class HistoryManagerTest {
         HistoryManager historyManager = new InMemoryHistoryManager();
         assertEquals(0, historyManager.getHistory().size(), "Список не пустой");
 
-        /*
-        for (int i = 0; i < 5; i++) {
-            historyManager.add(new Task("N-T" + i, "D-T" + i, i, Status.NEW));
-        }
-        // */
         Stream.of(0,1,2,3,4)
                 .map(num -> new Task("N-T" + num, "D-T" + num, num, Status.NEW))
                 .forEach(historyManager::add);
