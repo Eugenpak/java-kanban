@@ -173,9 +173,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             Task copyTask = copyTask(task);
             mapTask.put(copyTask.getId(), copyTask);
-            if (treeTask.contains(task)) {
-                treeTask.remove(task);
-            }
+            treeTask.remove(task);
             validTaskInTreeSet(copyTask);
             return true;
         }
