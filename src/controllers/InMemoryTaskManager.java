@@ -6,7 +6,10 @@ import model.Task;
 import service.ComparatorTaskStartTime;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -17,7 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Subtask> mapSubtask;
 
     private final HistoryManager historyManager;
-    private TreeSet<Task> treeTask = new TreeSet<Task>(new ComparatorTaskStartTime());
+    private TreeSet<Task> treeTask = new TreeSet<>(new ComparatorTaskStartTime());
 
     public InMemoryTaskManager() {
         mapTask = new HashMap<>();
@@ -128,6 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return null;
         */
+
     }
 
     @Override
@@ -237,43 +241,49 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void validTaskInTreeSet(Task task) {
         if (task.getStartTime() != null) {
-            if (treeTask.equals(task)) {
+            if (treeTask.contains(task)) {
                 treeTask.remove(task);
-            }
-        Optional<Task> taskOptional = treeTask.stream()
+            }  // */
+            //treeTask.stream().filter(e->e.getId()==task.getId()).
+            Optional<Task> taskOptional = treeTask.stream()
                 .filter(t -> checkIntersects(task,t))
                 .findFirst();
-        taskOptional.ifPresentOrElse(x ->
-                        System.out.println(task.getClass().getName().substring(6) + " '" + task.getName() +
-                        "'(id=" + task.getId() + ")" + " пересекает " + x.getClass().getName().substring(6) +
-                        " '" + x.getName() + "'(id=" + x.getId() + ") startTime=" + x.getStartTime() + ", endTime=" +
-                        x.getStartTime().plus(x.getDuration())),
+            taskOptional.ifPresentOrElse(x ->
+                        System.out.println("      " + task.getClass().getName().substring(6) + " '" + task.getName() +
+                        "'(id=" + task.getId() + ")[" + task.getStartTime() + " -> " +
+                                        task.getStartTime().plus(task.getDuration()) + "]" +
+                        " пересекает " + x.getClass().getName().substring(6) +
+                        " '" + x.getName() + "'(id=" + x.getId() + ")[" + x.getStartTime() + " -> " +
+                        x.getStartTime().plus(x.getDuration()) + "]"),
                 () -> treeTask.add(task));
         }
     }
 
     boolean checkIntersects(Task t1,Task t2) {
-        Duration d1 = t1.getDuration();
-        Duration d2 = t2.getDuration();
-        if (d1 == null) {
-            d1 = Duration.ZERO;
-        }
-        if (d2 == null) {
-            d2 = Duration.ZERO;
-        }
-        if (d1 == Duration.ZERO & d2 == Duration.ZERO) {
-            return false;
-        }
-        if (d1 == Duration.ZERO &
-                (t2.getStartTime().isBefore(t1.getStartTime()) & t2.getEndTime().isAfter(t1.getStartTime()))) {
-            return true;
-        }
-        if (d2 == Duration.ZERO &
-                (t1.getStartTime().isBefore(t2.getStartTime()) & t1.getEndTime().isAfter(t2.getStartTime()))) {
-            return true;
-        }
-        return (t1.getStartTime().isBefore(t2.getStartTime()) & t1.getEndTime().isAfter(t2.getStartTime())) ||
-                (t1.getStartTime().isBefore(t2.getEndTime()) & t1.getEndTime().isAfter(t2.getEndTime()));
+        Duration d1 = Optional.ofNullable(t1.getDuration()).orElse(Duration.ZERO);
+        Duration d2 = Optional.ofNullable(t2.getDuration()).orElse(Duration.ZERO);
+        LocalDateTime s1 = t1.getStartTime();
+        LocalDateTime s2 = t2.getStartTime();
+        LocalDateTime e1 = s1.plus(d1);
+        LocalDateTime e2 = s2.plus(d2);
+
+        if (d1.isZero() & d2.isZero() & s2.isEqual(s1)) return false; // n-4-4 (13)
+        if (d1.minus(d2).isZero() & d2.isZero() & !(s2.isEqual(s1))) return false; // n-4-5 (14)
+        if (d1.minus(d2).isNegative() & d1.isZero() & s2.isEqual(s1)) return false; // n-1-3 (4)-(08:00_0)
+        if (d1.isZero() & s1.isEqual(e1) & e2.isEqual(e1)) return false; // n-2-3 (7)_(08:20_0)
+
+        if (s1.isEqual(e1) & s1.isAfter(s2) & e1.isBefore(e2)) return true; // n-3-2 (9)
+        if (s1.isAfter(s2) & e1.isBefore(e2) & d1.isPositive()) return true; // n-3-1 (8)
+        if (s1.isAfter(s2) & s1.isBefore(e2) & e1.isAfter(e2)) return true; // n-4-3 (12)
+        if (d1.isPositive() & s2.isEqual(s1) & e2.isBefore(e1)) return true; // n-1-2-(3)
+        if (d1.isPositive() & s2.isEqual(s1) & e2.isEqual(e1)) return true; // n-0-0-(1)
+        if (d1.isZero() & s1.isEqual(e1) & s2.isEqual(s1)) return false; // n-1-3-(3)
+
+        if (s1.isBefore(e2) & s1.isAfter(s2) & e2.isEqual(e1) & d1.minus(d2).isNegative()) return true; // n-2-2 (6)
+        if (d1.minus(d2).isNegative() & e1.isBefore(e2) & s1.isEqual(s2)) return true; // n-1-1-(2)
+        if (d1.isZero() & (s2.isBefore(s1) & e2.isAfter(s1))) return true; // n-3-2 (8)
+        if ((s1.isBefore(s2) & e1.isAfter(s2)) || (s1.isBefore(e2) & e1.isAfter(e2))) return true;
+        return false;
     }
 
     private boolean checkIdAdd(Task task) {
@@ -433,6 +443,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public List<Task> getPrioritizedTasks() {
-        return treeTask.stream().collect(Collectors.toList());
+        //return treeTask.stream().collect(Collectors.toList());
+        return new ArrayList<>(treeTask);
     }
 }

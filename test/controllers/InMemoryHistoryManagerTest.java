@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Status;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,12 +106,13 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void getHistory() {
+        LocalDateTime start = LocalDateTime.of(2024,12,01,8,0,0);
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         assertEquals(0,inMemoryHistoryManager.getHistory().size(), "Список не пустой");
         ArrayList<Task> listUser = new ArrayList<>();
-        listUser.add(new Subtask("","",0,Status.NEW,-4));
-        listUser.add(new Subtask("","",1,Status.NEW,-4));
-        listUser.add(new Subtask("","",2,Status.NEW,-4));
+        listUser.add(new Subtask("","",0,Status.NEW,-4,start, Duration.ZERO));
+        listUser.add(new Subtask("","",1,Status.NEW,-4,start.plusMinutes(5), Duration.ZERO));
+        listUser.add(new Subtask("","",2,Status.NEW,-4,start.plusMinutes(10), Duration.ZERO));
 
         for (Task elem:listUser){
             inMemoryHistoryManager.add(elem);

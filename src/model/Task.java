@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.Optional;
+
 import service.Status;
 
 public class Task {
@@ -14,9 +16,9 @@ public class Task {
     private LocalDateTime startTime;
     private Duration duration;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
+    private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
 
-    public DateTimeFormatter getFormatter() {
+    public static DateTimeFormatter getFormatter() {
         return formatter;
     }
 
@@ -32,7 +34,7 @@ public class Task {
         this(name,description,status);
         this.id = -3;
         this.startTime = startTime;
-        this.duration = duration;
+        this.duration = Optional.ofNullable(duration).orElse(Duration.ZERO);
 
     }
 
@@ -42,7 +44,7 @@ public class Task {
         this.id = task.getId();
         this.status = task.status;
         this.startTime = task.startTime;
-        this.duration = task.duration;
+        this.duration = Optional.ofNullable(task.duration).orElse(Duration.ZERO);
     }
 
     public Task() {
@@ -58,7 +60,7 @@ public class Task {
     public Task(String name, String description, int id, Status status, LocalDateTime startTime, Duration duration) {
         this(name, description, id, status);
         this.startTime = startTime;
-        this.duration = duration;
+        this.duration = Optional.ofNullable(duration).orElse(Duration.ZERO);
     }
 
     public LocalDateTime getEndTime() throws NullPointerException {
@@ -82,7 +84,7 @@ public class Task {
     }
 
     public void setDuration(Duration duration) {
-        this.duration = duration;
+        this.duration = Optional.ofNullable(duration).orElse(Duration.ZERO);
     }
 
     public Duration getDuration() {

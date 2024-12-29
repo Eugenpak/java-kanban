@@ -19,7 +19,7 @@ import java.util.List;
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final String filename;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter formatter = Task.getFormatter();
 
     public FileBackedTaskManager(String filename) {
         this.filename = filename;

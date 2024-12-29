@@ -9,8 +9,10 @@ import service.Status;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 //import java.util.concurrent.StructuredTaskScope;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -74,8 +76,9 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     void getEpicSubtasks() {
+        LocalDateTime start = LocalDateTime.of(2024,9,12,8,0,0);
         Epic epic = new Epic("E-1","DE-1");
-        Subtask subtask = new Subtask("S-1","SE-1",Status.IN_PROGRESS);
+        Subtask subtask = new Subtask("S-1","SE-1",Status.IN_PROGRESS,start,Duration.ofMinutes(15));
         final int epicId = taskManager.addNewEpic(epic);
         final Epic savedEpic = taskManager.getEpicById(epicId);
         assertNotNull(savedEpic, "Задача не найдена.");
@@ -178,7 +181,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     void addNewTask() {
-        final Task task1 = new Task("name-1","des-1", Status.NEW);
+        LocalDateTime start = LocalDateTime.of(2024,9,12,8,0,0);
+        final Task task1 = new Task("name-1","des-1", Status.NEW,start,Duration.ZERO);
 
         final int taskId = taskManager.addNewTask(task1);
         taskManager.updateTask(task1);
@@ -219,7 +223,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     void test7checkId() {
-        Task task = new Task("T-15","DT-15",15, Status.NEW);
+        LocalDateTime start = LocalDateTime.of(2024,9,12,8,0,0);
+        Task task = new Task("T-15","DT-15",15, Status.NEW,start,Duration.ofMinutes(20));
         final int taskId = taskManager.addNewTask(task);
         taskManager.updateTask(task);
         final Task savedTask = taskManager.getTaskById(taskId);
@@ -242,7 +247,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     void addNewEpic() {
-        Epic epic = new Epic("E-1","DE-1");
+        LocalDateTime start = LocalDateTime.of(2024,9,12,8,0,0);
+        Epic epic = new Epic("E-1","DE-1",start,Duration.ZERO);
 
         final int epicId = taskManager.addNewEpic(epic);
         taskManager.updateEpic(epic);
@@ -254,7 +260,8 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     void addNewSubtask() {
-        Subtask subtask = new Subtask("S-1","SE-1",Status.NEW);
+        LocalDateTime start = LocalDateTime.of(2024,9,12,8,0,0);
+        Subtask subtask = new Subtask("S-1","SE-1",Status.NEW,start,Duration.ZERO);
 
         final int subtaskId = taskManager.addNewSubtask(subtask);
         taskManager.updateSubtask(subtask);
@@ -479,38 +486,46 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         assertNotEquals(0, taskId);
     }
 
-
     @Test
     void addTaskListPrioritized() {
         LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
-        Duration durationT = Duration.ofMinutes(9);
+        Duration durationT = Duration.ofMinutes(10);
         Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
         taskManager.addNewTask(task);
+
         Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(20),durationT);
         taskManager.addNewTask(task1);
+
         Subtask subtask = new Subtask("N-S2","D-S2",Status.NEW,start.plusMinutes(29),durationT);
         taskManager.addNewSubtask(subtask);
+
         Subtask subtask1 = new Subtask("N-S3","D-S3",Status.DONE,start.plusMinutes(30),durationT);
         taskManager.addNewSubtask(subtask1);
+
         Task task2 = new Task("N-T4","D-T4",Status.NEW,start.plusMinutes(50),Duration.ZERO);
         taskManager.addNewTask(task2);
-        LocalDateTime startBug = LocalDateTime.parse(" 2024-07-07 08:00",task.getFormatter());
+        LocalDateTime startBug = LocalDateTime.parse(" 2024-10-10 08:29",task.getFormatter());
         Duration durationBug = Duration.ZERO;
         Task task3 = new Task("N-T5","D-T5",Status.NEW, startBug,durationBug);
         taskManager.addNewTask(task3);
 
         subtask.setName("N-S2 after update");
-        taskManager.updateSubtask(subtask1);
+        taskManager.updateSubtask(subtask);
         task1.setStartTime(start.minusMinutes(30));
         taskManager.updateTask(task1);
+
 
         //taskManager.deleteSubtask(subtask.getId());
         //taskManager.deleteSubtasks();
         //taskManager.deleteTask(task1.getId());
         //taskManager.deleteTask(5);
-        taskManager.deleteTasks();
+        //taskManager.deleteTasks();
         subtask1.setStartTime(subtask1.getStartTime().minusMinutes(30));
+        subtask1.setDuration(Duration.ofMinutes(10));
         taskManager.addNewSubtask(subtask1);
+        task1.setStartTime(start.plusMinutes(1));
+        task1.setDuration(Duration.ofMinutes(15));
+        taskManager.updateTask(task1);
 
         /*
         List<Task> test = taskManager.getPrioritizedTasks();
@@ -520,7 +535,38 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         */
         System.out.println();
         taskManager.getPrioritizedTasks().forEach(System.out::println);
+        assertEquals(3,taskManager.getPrioritizedTasks().size(), "Список не пустой");
 
+    }
+
+    @Test
+    void updateTaskListPrioritized() {
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(20),durationT);
+        taskManager.addNewTask(task1);
+        Subtask subtask = new Subtask("N-S2","D-S2",Status.NEW,start.plusMinutes(35),durationT);
+        taskManager.addNewSubtask(subtask);
+        Subtask subtask1 = new Subtask("N-S3","D-S3",Status.DONE,start.plusMinutes(40),durationT);
+        taskManager.addNewSubtask(subtask1);
+
+        subtask.setName("N-S2 after update");
+        taskManager.updateSubtask(subtask);
+        task1.setStartTime(taskManager.getTaskById(1).getStartTime().minusMinutes(13));
+        taskManager.updateTask(task1);
+
+        subtask1.setStartTime(subtask1.getStartTime().plusMinutes(7));
+        subtask1.setDuration(Duration.ofMinutes(10));
+        taskManager.updateSubtask(subtask1);
+        task1.setStartTime(start.plusMinutes(30));
+        task1.setDuration(Duration.ofMinutes(15));
+        taskManager.updateTask(task1);
+
+        System.out.println();
+        taskManager.getPrioritizedTasks().forEach(System.out::println);
+        assertEquals(3,taskManager.getPrioritizedTasks().size(), "Список не пустой");
     }
 
     @Test
@@ -622,13 +668,140 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
         Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
         taskManager.addNewTask(task);
-        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(0),Duration.ZERO);
+        Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(10),Duration.ofMinutes(5));
         taskManager.addNewTask(task1);
 
         listPrioritizedTasks = taskManager.getPrioritizedTasks();
-        assertEquals(1,listPrioritizedTasks.size(), "Список не пустой");
+        assertEquals(2,listPrioritizedTasks.size(), "Список не пустой");
         String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
         assertTrue(listPrioritizedTasks.get(0).toString().contains(str));
+    }
+
+    @Test
+    void addTaskListPrioritized_T1() {
+        // Добавляемая задача startTime2>startTime1,duration2==duration1, startTime2>endTime1
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        assertEquals(0,taskManager.getPrioritizedTasks().size(), "Список не пустой");
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+
+        Task task1 = new Task("N-T1","D-T1",Status.NEW,start.plusMinutes(20),durationT);
+        taskManager.addNewTask(task1);
+        assertEquals(2,taskManager.getPrioritizedTasks().size(), "Список не пустой");
+        String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(taskManager.getPrioritizedTasks().get(0).toString().contains(str));
+        str = "Task{Id=1, name='N-T1', description='D-T1', status=NEW, startTime= 2024-10-10 08:20, duration=10}";
+        assertTrue(taskManager.getPrioritizedTasks().get(1).toString().contains(str));
+        System.out.println();
+        taskManager.getPrioritizedTasks().forEach(System.out::println);
+    }
+
+    @Test
+    void addTaskListPrioritized_T2() {
+        // Добавляемая задача startTime2==startTime1, duration2==duration1, endTime2==endTime1
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Duration durationT = Duration.ofMinutes(10);
+        assertEquals(0,taskManager.getPrioritizedTasks().size(), "Список не пустой");
+        Task task = new Task("N-T0","D-T0",Status.NEW,start,durationT);
+        taskManager.addNewTask(task);
+
+        Task task1 = new Task("N-T1","D-T1",Status.NEW,start.plusMinutes(0),durationT);
+        taskManager.addNewTask(task1);
+        assertEquals(1,taskManager.getPrioritizedTasks().size(), "Список не пустой");
+        String str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(taskManager.getPrioritizedTasks().get(0).toString().contains(str));
+        str = "Task{Id=0, name='N-T0', description='D-T0', status=NEW, startTime= 2024-10-10 08:00, duration=10}";
+        assertTrue(taskManager.getPrioritizedTasks().get(0).toString().contains(str));
+        System.out.println();
+        taskManager.getPrioritizedTasks().forEach(System.out::println);
+    }
+
+    @Test
+    void addTaskListPrioritized_T3() {
+        // Добавляемая задача startTime2==startTime1, duration2==duration1
+        // "'(id=" + taskPr.getId() + ")" +
+        Consumer<Task> printTask = taskPr -> System.out.print(taskPr.getClass().getName().substring(6) +
+                " '" + taskPr.getName() + "'" + "[" + taskPr.getStartTime() + " -> " +
+                taskPr.getStartTime().plus(taskPr.getDuration()) + "]" + " | ");
+        String[] dataTest = {
+                "n-0-0, 2024-12-01 08:00,20, 2024-12-01 08:00,20, s1=s2 - e1=e2 - d1=d2>0 - ,Пер",
+
+                "n-1-1, 2024-12-01 08:00,20, 2024-12-01 08:00,15, s1=s2 - e1>e2 - d1>d2 - ,Пер",
+                "n-1-2, 2024-12-01 08:00,20, 2024-12-01 08:00,25, s1=s2 - e1<e2 - d1<d2 - ,Пер",
+                "n-1-3, 2024-12-01 08:00,20, 2024-12-01 08:00,0, s1=s2=e2 - e1>e2 - d1>d2 - d2=0, ",
+
+                "n-2-1, 2024-12-01 08:00,20, 2024-12-01 07:55,25, s1>s2 - e1=e2 - d1>d2 - ,Пер",
+                "n-2-2, 2024-12-01 08:00,20, 2024-12-01 08:05,15, s1<s2 - e1=e2 - d1<d2 - ,Пер",
+                "n-2-3, 2024-12-01 08:00,20, 2024-12-01 08:20,0, s1<s2 - e1=e2=s2 - d1>d2 - d2=0, ",
+
+                "n-3-1, 2024-12-01 08:00,20, 2024-12-01 08:05,10, s1<s2 - e1>e2 - d1>d2 - ,Пер",
+                "n-3-2, 2024-12-01 08:00,20, 2024-12-01 08:05,0, s1<s2 - e1>e2 - d1>d2 - d2=0 - ,Пер",
+
+                "n-4-1, 2024-12-01 08:00,20, 2024-12-01 07:55,30, s1>s2 - e1<e2 - d1<d2 - ,Пер",
+                "n-4-2, 2024-12-01 08:00,20, 2024-12-01 07:55,20, s1>s2 - e1>e2 - d1=d2 - ,Пер",
+                "n-4-3, 2024-12-01 08:00,20, 2024-12-01 08:05,20, s1<s2 - e1<e2 - d1=d2 - ,Пер",
+                "n-4-4, 2024-12-01 08:00,0, 2024-12-01 08:00,0, s1=s2=e1=e2 - d1=d2=0 - , ",
+                "n-4-5, 2024-12-01 08:00,0, 2024-12-01 08:10,0, s1=e1 - s2=e2 - d1=d2=0 - s1 != s2, "
+                };
+        String protol = "Пер-Пер-Пер-0-Пер-Пер-0-Пер-Пер-Пер-Пер-Пер-0-0-|";
+        StringBuilder result = new StringBuilder();
+        DateTimeFormatter formatter = Task.getFormatter();
+
+        for (String elemTest : dataTest) {
+            String[] inputArg = elemTest.split(",");
+            LocalDateTime start0 = LocalDateTime.parse(inputArg[1], formatter);
+            Duration duration0 = Duration.ofMinutes(Long.parseLong(inputArg[2]));
+            LocalDateTime start1 = LocalDateTime.parse(inputArg[3], formatter);
+            Duration duration1 = Duration.ofMinutes(Long.parseLong(inputArg[4]));
+            assertEquals(0, taskManager.getPrioritizedTasks().size(), "Список не пустой");
+
+            Task task = new Task("N-T0", "D-T0", Status.NEW, start0, duration0);
+            taskManager.addNewTask(task);
+            Task task1 = new Task("N-T1", "D-T1", Status.NEW, start1, duration1);
+            taskManager.addNewTask(task1);
+            List<Task> taskList = taskManager.getPrioritizedTasks();
+            taskList.forEach(printTask);
+            //if (taskList.get(0).getName().equals("N-T1")) System.out.println("пересекает ->|");
+            if (taskList.size()==2) {
+                result.append("0-");
+                boolean flag = " ".equals(inputArg[6]);
+                if (flag) {
+                    System.out.println("| " + Boolean.toString(flag));
+                } else {
+                    System.out.println(inputArg[0] + " ->| " + Boolean.toString(flag));
+                }
+            }
+            if (taskList.size()==1) {
+                result.append("Пер-");
+                boolean flag = "Пер".equals(inputArg[6]);
+                if (flag) {
+                    System.out.println("| " + Boolean.toString(flag));
+                } else {
+                    System.out.println(inputArg[0] + " формула " + inputArg[5] + inputArg[6] + " | " +
+                            Boolean.toString(flag));
+                }
+            }
+            taskManager.deleteTasks();
+        }
+        result.append("|");
+        assertTrue(result.toString().equals(protol));
+    }
+
+    @Test
+    void addTaskListPrioritized_T4() {
+        DateTimeFormatter formatter = Task.getFormatter();
+        LocalDateTime start0 = LocalDateTime.parse(" 2024-12-01 08:00", formatter);
+        //Duration duration1 = Duration.ofMinutes(Long.parseLong(inputArg[4]));
+        assertEquals(0, taskManager.getPrioritizedTasks().size(), "Список не пустой");
+
+        Task task = new Task("N-T0", "D-T0", Status.NEW, start0, null);
+        taskManager.addNewTask(task);
+        Task task1 = new Task("N-T1", "D-T1", Status.NEW, start0, Duration.ofMinutes(7));
+        taskManager.addNewTask(task1);
+        List<Task> taskList = taskManager.getHistory();
+        assertEquals(0, taskList.get(0).getDuration().toMinutes());
+        assertEquals(7, taskList.get(1).getDuration().toMinutes());
     }
 
 }

@@ -10,7 +10,8 @@ public class ComparatorTaskStartTime implements Comparator<Task> {
             return 1;
         } else if (a.getStartTime().isBefore(b.getStartTime())) {
             return -1;
+        } else {
+           return a.getId() - b.getId();
         }
-        return 0;
     }
 }
