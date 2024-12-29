@@ -720,7 +720,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
                 };
         String protol = "Пер-Пер-Пер-0-Пер-Пер-0-Пер-Пер-Пер-Пер-Пер-0-0-|";
         StringBuilder result = new StringBuilder();
-        DateTimeFormatter formatter = Task.getFormatter();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
 
         for (String elemTest : dataTest) {
             String[] inputArg = elemTest.split(",");
@@ -764,7 +764,7 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Test
     void addTaskListPrioritized_T4() {
-        DateTimeFormatter formatter = Task.getFormatter();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
         LocalDateTime start0 = LocalDateTime.parse(" 2024-12-01 08:00", formatter);
         //Duration duration1 = Duration.ofMinutes(Long.parseLong(inputArg[4]));
         assertEquals(0, taskManager.getPrioritizedTasks().size(), "Список не пустой");

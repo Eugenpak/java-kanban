@@ -15,9 +15,9 @@ public class Task {
     private LocalDateTime startTime;
     private Duration duration;
 
-    private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
 
-    public static DateTimeFormatter getFormatter() {
+    public DateTimeFormatter getFormatter() {
         return formatter;
     }
 
