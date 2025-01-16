@@ -4,8 +4,6 @@ import model.Subtask;
 import model.Task;
 import service.Status;
 
-
-
 public class Main {
 
     public static void main(String[] args) {
@@ -74,7 +72,6 @@ public class Main {
     }
 
     private static void fillManagers(TaskManager manager) {
-
         Epic epic = new Epic("E-0","DE-0");
         int epicId0 = manager.addNewEpic(epic);
         Subtask subtask = new Subtask("S-1","SE-1",Status.NEW);
@@ -91,9 +88,6 @@ public class Main {
         int epicId1 = manager.addNewEpic(epic);
         manager.updateEpic(manager.getEpicById(epicId1));
     }
-
-
-
 
     public static void userScenarioOld() {
         TaskManager taskManager = Managers.getDefault();

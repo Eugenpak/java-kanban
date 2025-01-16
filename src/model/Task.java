@@ -1,6 +1,10 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.Optional;
 import service.Status;
 
 public class Task {
@@ -8,6 +12,14 @@ public class Task {
     private String description;
     private int id;
     private Status status;
+    private LocalDateTime startTime;
+    private Duration duration;
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(" yyyy-MM-dd HH:mm");
+
+    public DateTimeFormatter getFormatter() {
+        return formatter;
+    }
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -16,11 +28,21 @@ public class Task {
         this.id = -3;
     }
 
+    public Task(String name, String description, Status status,LocalDateTime startTime, Duration duration) {
+        this(name,description,status);
+        this.id = -3;
+        this.startTime = startTime;
+        this.duration = Optional.ofNullable(duration).orElse(Duration.ZERO);
+
+    }
+
     public Task(Task task) {
         this.name = task.name;
         this.description = task.description;
         this.id = task.getId();
         this.status = task.status;
+        this.startTime = task.startTime;
+        this.duration = Optional.ofNullable(task.duration).orElse(Duration.ZERO);
     }
 
     public Task() {
@@ -33,12 +55,38 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String name, String description, int id, Status status, LocalDateTime startTime, Duration duration) {
+        this(name, description, id, status);
+        this.startTime = startTime;
+        this.duration = Optional.ofNullable(duration).orElse(Duration.ZERO);
+    }
+
+    public LocalDateTime getEndTime() throws NullPointerException {
+        return startTime.plus(duration);
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public LocalDateTime getStartTime() throws NullPointerException {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = Optional.ofNullable(duration).orElse(Duration.ZERO);
+    }
+
+    public Duration getDuration() {
+        return duration;
     }
 
     @Override
@@ -48,7 +96,25 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
+                ", startTime=" + validLocalDateTime(startTime) +
+                ", duration=" + validDuration(duration) +
                 '}';
+    }
+
+    public String validLocalDateTime(LocalDateTime value) {
+        try {
+            return value.format(formatter);
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public String validDuration(Duration value) {
+        try {
+            return Long.toString(value.toMinutes());
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     public void setStatus(Status status) {
@@ -72,7 +138,6 @@ public class Task {
     }
 
     public void setDescription(String description) {
-
         this.description = description;
     }
 
@@ -82,7 +147,9 @@ public class Task {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id && Objects.equals(name, task.name) &&
-                Objects.equals(description, task.description) && status == task.status;
+                Objects.equals(description, task.description) && status == task.status &&
+                Objects.equals(startTime, task.startTime) &&
+                Objects.equals(duration, task.duration);
     }
 
     @Override

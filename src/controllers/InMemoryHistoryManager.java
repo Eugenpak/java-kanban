@@ -31,7 +31,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             return tail;
     }
 
-
     public InMemoryHistoryManager() {
         nodeMap = new HashMap<>();
     }

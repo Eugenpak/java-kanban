@@ -3,6 +3,8 @@ package model;
 import org.junit.jupiter.api.Test;
 import service.Status;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,8 +29,10 @@ class EpicTest {
 
     @Test
     void setArraySubtask() {
-        Subtask subtask1 = new Subtask("S-1","DS-1",4, Status.IN_PROGRESS,3);
-        Subtask subtask2 = new Subtask("S-2","DS-2",10, Status.DONE,7);
+        LocalDateTime start = LocalDateTime.of(2024,12,22,10,0,0);
+        Duration durationTest = Duration.ofMinutes(15);
+        Subtask subtask1 = new Subtask("S-1","DS-1",4, Status.IN_PROGRESS,3,start,durationTest);
+        Subtask subtask2 = new Subtask("S-2","DS-2",10, Status.DONE,7,start.plusMinutes(20),durationTest);
         Epic epic = new Epic("name-1","des-1",1, Status.NEW);
 
         assertEquals(0,epic.getArraySubtask().size(), "Не правильный размер списка Subtask!");
@@ -93,7 +97,8 @@ class EpicTest {
     void testToString() {
         Epic epic = new Epic("name-1","des-1",1, Status.NEW);
         assertNotNull(epic, "Задача не пустая.");
-        String str = "Epic{Id=1, name='name-1', description='des-1', status=NEW, arraySubtask: []}";
+        String str = "Epic{Id=1, name='name-1', description='des-1', status=NEW, startTime=null,"
+                   + " duration=null, endTime=null, arraySubtask: []}";
         assertEquals(str,epic.toString(), "Не верная строка!");
     }
 
