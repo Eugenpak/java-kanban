@@ -1,7 +1,5 @@
 package controllers;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import http.*;
 import model.Epic;
@@ -11,16 +9,8 @@ import service.Status;
 
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
@@ -42,7 +32,6 @@ public class HttpTaskServer {
 
     public static void main(String[] args) throws IOException {
         HttpTaskServer taskServer = new HttpTaskServer();
-
         taskServer.fillTaskManager();
         taskServer.start(); // запускаем сервер
     }
