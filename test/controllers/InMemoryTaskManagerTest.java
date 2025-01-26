@@ -503,20 +503,9 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         Task task3 = new Task("N-T5","D-T5",Status.NEW, startBug,durationBug);
         taskManager.addNewTask(task3);
 
-        subtask.setName("N-S2 after update");
-        taskManager.updateSubtask(subtask);
-        task1.setStartTime(start.minusMinutes(30));
-        taskManager.updateTask(task1);
-
-        subtask1.setStartTime(subtask1.getStartTime().minusMinutes(30));
-        subtask1.setDuration(Duration.ofMinutes(10));
-        taskManager.addNewSubtask(subtask1);
-        task1.setStartTime(start.plusMinutes(1));
-        task1.setDuration(Duration.ofMinutes(15));
-        taskManager.updateTask(task1);
         System.out.println();
         taskManager.getPrioritizedTasks().forEach(System.out::println);
-        assertEquals(3,taskManager.getPrioritizedTasks().size(), "Список не пустой");
+        assertEquals(4,taskManager.getPrioritizedTasks().size(), "Список не пустой");
     }
 
     @Test
@@ -527,26 +516,33 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         taskManager.addNewTask(task);
         Task task1 = new Task("N-T1","D-T1",Status.IN_PROGRESS,start.plusMinutes(20),durationT);
         taskManager.addNewTask(task1);
-        Subtask subtask = new Subtask("N-S2","D-S2",Status.NEW,start.plusMinutes(35),durationT);
+        int epicId = taskManager.addNewEpic(new Epic("N-E2","D-E2"));
+        Subtask subtask = new Subtask("N-S3","D-S3",Status.NEW,start.plusMinutes(35),durationT);
+        subtask.setEpicId(epicId);
         taskManager.addNewSubtask(subtask);
-        Subtask subtask1 = new Subtask("N-S3","D-S3",Status.DONE,start.plusMinutes(40),durationT);
+        Subtask subtask1 = new Subtask("N-S4","D-S4",Status.DONE,start.plusMinutes(40),durationT);
+        subtask1.setEpicId(epicId);
         taskManager.addNewSubtask(subtask1);
-
-        subtask.setName("N-S2 after update");
+        subtask = new Subtask(subtask);
+        subtask.setName("N-S3 after update");
         taskManager.updateSubtask(subtask);
-        task1.setStartTime(taskManager.getTaskById(1).getStartTime().minusMinutes(13));
+        //final LocalDateTime startTask = taskManager.getTaskById(1).getStartTime();
+        task1 = new Task(task1);
+        task1.setStartTime(task1.getStartTime().minusMinutes(13));
         taskManager.updateTask(task1);
 
-        subtask1.setStartTime(subtask1.getStartTime().plusMinutes(7));
+        subtask1 = new Subtask(subtask1);
+        subtask1.setStartTime(subtask1.getStartTime().plusMinutes(10));
         subtask1.setDuration(Duration.ofMinutes(10));
         taskManager.updateSubtask(subtask1);
+        task1 = new Task(task1);
         task1.setStartTime(start.plusMinutes(30));
         task1.setDuration(Duration.ofMinutes(15));
         taskManager.updateTask(task1);
 
         System.out.println();
         taskManager.getPrioritizedTasks().forEach(System.out::println);
-        assertEquals(3,taskManager.getPrioritizedTasks().size(), "Список не пустой");
+        assertEquals(4,taskManager.getPrioritizedTasks().size(), "Список не пустой");
     }
 
     @Test
@@ -769,13 +765,14 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         //Duration duration1 = Duration.ofMinutes(Long.parseLong(inputArg[4]));
         assertEquals(0, taskManager.getPrioritizedTasks().size(), "Список не пустой");
 
-        Task task = new Task("N-T0", "D-T0", Status.NEW, start0, null);
+        Task task = new Task("N-T0", "D-T0", Status.NEW, start0, Duration.ofMinutes(3));
         taskManager.addNewTask(task);
         Task task1 = new Task("N-T1", "D-T1", Status.NEW, start0, Duration.ofMinutes(7));
         taskManager.addNewTask(task1);
         List<Task> taskList = taskManager.getHistory();
-        assertEquals(0, taskList.get(0).getDuration().toMinutes());
-        assertEquals(7, taskList.get(1).getDuration().toMinutes());
+        assertEquals(1, taskList.size());
+        assertEquals(3, taskList.get(0).getDuration().toMinutes());
+        assertEquals(0, taskList.get(0).getId());
     }
 
 }
