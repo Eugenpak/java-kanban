@@ -33,22 +33,10 @@ public class EpicHandler  extends BaseHttpHandler implements HttpHandler {
         Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
 
         switch (endpoint) {
-            case GET -> {
-                handleGet(exchange);
-                break;
-            }
-            case GET_ID -> {
-                handleGetId(exchange);
-                break;
-            }
-            case POST -> {
-                handlePost(exchange);
-                break;
-            }
-            case DELETE -> {
-                handleDelete(exchange);
-                break;
-            }
+            case GET -> handleGet(exchange);
+            case GET_ID -> handleGetId(exchange);
+            case POST -> handlePost(exchange);
+            case DELETE -> handleDelete(exchange);
             default -> writeResponse(exchange, "Такого эндпоинта не существует", 404);
         }
     }
@@ -65,7 +53,6 @@ public class EpicHandler  extends BaseHttpHandler implements HttpHandler {
                 .registerTypeAdapter(Subtask.class, new SubtaskConverter())
                 .create();
         //Gson gson = new Gson();
-
 
         // извлеките идентификатор поста и обработайте исключительные ситуации
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
@@ -85,6 +72,7 @@ public class EpicHandler  extends BaseHttpHandler implements HttpHandler {
                 .registerTypeAdapter(Epic.class, new EpicConverter())
                 .registerTypeAdapter(Subtask.class, new SubtaskConverter())
                 .create();
+
         int rCode;
         String responseString;
         if (idOpt.isEmpty()) { // Проверка корректности идентификатор Epic
@@ -132,7 +120,7 @@ public class EpicHandler  extends BaseHttpHandler implements HttpHandler {
         int rCode;
         String responseString;
 
-        if (idTaskOpt.isEmpty() | idTaskOpt.get() == -3) { // Проверка корректности идентификатор поста
+        if (idTaskOpt.isEmpty() | idTaskOpt.get() == -3) { // Проверка корректности идентификатор
             int createId = tm.addNewEpic(epic);
             if (tm.getEpicById(createId) == null) {
                 rCode = 410;
@@ -153,7 +141,6 @@ public class EpicHandler  extends BaseHttpHandler implements HttpHandler {
                     rCode = 410;
                     responseString = "Epic нет обработчика, updateEpic()";
                 }
-
             } else {
                 rCode = 404;
                 responseString = "Epic с идентификатором " + taskId + " не найден";

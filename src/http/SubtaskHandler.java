@@ -88,7 +88,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         String responseString;
         if (idOpt.isEmpty()) { // Проверка корректности идентификатор поста
             rCode = 404;
-            responseString = "Некорректный идентификатор подзадачи";
+            responseString = "Некорректный идентификатор Subtask";
         } else {
             Integer taskId = idOpt.get();
             Optional<Task> taskOpt = Optional.ofNullable(tm.getSubtaskById(taskId));
@@ -98,7 +98,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 responseString = gson.toJson(taskOpt.get());
             } else {
                 rCode = 404;
-                responseString = "Task с идентификатором " + taskId + " не найден";
+                responseString = "Subtask с идентификатором " + taskId + " не найден";
             }
         }
         writeResponse(exchange, responseString, rCode);
@@ -165,7 +165,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         String responseString;
         if (idOpt.isEmpty()) { // Проверка корректности идентификатор поста
             rCode = 404;
-            responseString = "Некорректный идентификатор Task";
+            responseString = "Некорректный идентификатор Subtask";
         } else {
             Integer taskId = idOpt.get();
             Optional<Task> taskOpt = Optional.ofNullable(tm.getSubtaskById(taskId));

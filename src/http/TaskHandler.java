@@ -26,66 +26,46 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     public TaskHandler(TaskManager tm) {
         this.tm = tm;
     }
+    private Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Task.class, new TaskConverter())
+            .create();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
 
         switch (endpoint) {
-            case GET -> {
-                handleGet(exchange);
-                break;
-            }
-            case GET_ID -> {
-                handleGetId(exchange);
-                break;
-            }
-            case POST -> {
-                handlePost(exchange);
-                break;
-            }
-            case DELETE -> {
-                handleDelete(exchange);
-                break;
-            }
+            case GET -> handleGet(exchange);
+            case GET_ID -> handleGetId(exchange);
+            case POST -> handlePost(exchange);
+            case DELETE -> handleDelete(exchange);
             default -> writeResponse(exchange, "Такого эндпоинта не существует", 404);
         }
     }
 
     private void handleGet(HttpExchange exchange) throws IOException {
-        // адаптер для преобразования типа LocalTime в String в формате субтитров
-        LocalDateTimeAdapter localDateTimeAdapter = new LocalDateTimeAdapter();
-        // реализуйте обработку запроса на добавление комментария
-
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, localDateTimeAdapter)
-                .registerTypeAdapter(Task.class, new TaskConverter())
-                .create();
         //Gson gson = new Gson();
+        /*
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .registerTypeAdapter(Task.class, new TaskConverter())
+                .create(); */
 
-
-        // извлеките идентификатор поста и обработайте исключительные ситуации
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
-
-        int rCode = 200;
         List<Task> list = tm.getListTask();
-        String responseString = list.stream()
-                .map(Task::toString)
-                .collect(Collectors.joining("\n"));   //gson.toJson(list);
-        //System.out.println(responseString);
-              /*  .stream()
-                .map(gson::toJson)
-                .collect(Collectors.joining("\n")); */
-        responseString = gson.toJson(list);
-        writeResponse(exchange, responseString,rCode);
+        String responseString = gson.toJson(list);
+
+        sendText(exchange,responseString);
     }
     private void handleGetId(HttpExchange exchange) throws IOException {
         // извлеките идентификатор поста и обработайте исключительные ситуации
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
         Optional<Integer> idOpt = getIdOpt(splitStrings[2]);
+        /*
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Task.class, new TaskConverter())
                 .create();
+        */
         int rCode;
         String responseString;
         if (idOpt.isEmpty()) { // Проверка корректности идентификатор поста
@@ -109,28 +89,16 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handlePost(HttpExchange exchange) throws IOException {
         // извлеките идентификатор поста и обработайте исключительные ситуации
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
+        /*
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Task.class, new TaskConverter())
                 .create();
+        */
         InputStream inputStream = exchange.getRequestBody();
         String str = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
         Task task = gson.fromJson(str,Task.class);
-        /*
-        Task t = tm.getTaskById(0);
-        String json = gson.toJson(t);
 
-        Task x;
-        try {
-            x = gson.fromJson(json, Task.class);
-        } catch (JsonParseException e) {
-            System.out.println(e);
-            x = null;
-        }
-
-        int rCode = 277;
-        String responseString = x.toString();
-        */
         Optional<Integer> idTaskOpt = Optional.ofNullable(task.getId());
         System.out.println("Запрос POST " + Instant.now());
         int rCode;
@@ -172,9 +140,11 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         // извлеките идентификатор поста и обработайте исключительные ситуации
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
         Optional<Integer> idOpt = getIdOpt(splitStrings[2]);
+        /*
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Task.class, new TaskConverter())
                 .create();
+        */
         int rCode;
         String responseString;
         if (idOpt.isEmpty()) { // Проверка корректности идентификатор поста
@@ -194,11 +164,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             }
         }
         writeResponse(exchange, responseString,rCode);
-
     }
 
     class TaskListTypeToken extends TypeToken<List<Task>> {
     }
-
-
 }

@@ -4,10 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import http.adapter.SubtaskConverter;
-import http.adapter.TaskConverter;
 import model.Epic;
 import model.Subtask;
-import model.Task;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -95,6 +93,7 @@ public class HttpTaskManagerSubtasksTest {
         assertNotNull(subtasksFromManager, "Задачи возвращаются");
         assertEquals(1, subtasksFromManager.size(), "Некорректное количество задач");
         assertEquals("N-S0", subtasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        //client.close();
     }
 
     @Test
@@ -148,15 +147,16 @@ public class HttpTaskManagerSubtasksTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         assertEquals(200, response.statusCode());
-        Subtask sutaskfromJson= gson.fromJson(response.body(), Subtask.class);
+        Subtask sutaskFromJson = gson.fromJson(response.body(), Subtask.class);
         // проверяем, что задача удалена
-        assertNotNull(sutaskfromJson, "Задача не возвращаются");
-        assertEquals(0, sutaskfromJson.getId(), "Некорректное id задач");
-        assertEquals("N-S0", sutaskfromJson.getName(), "Некорректное имя задачи");
+        assertNotNull(sutaskFromJson, "Задача не возвращаются");
+        assertEquals(0, sutaskFromJson.getId(), "Некорректное id задач");
+        assertEquals("N-S0", sutaskFromJson.getName(), "Некорректное имя задачи");
+        //client.close();
     }
 
     @Test
-    void subtasksGetSubtaskById_Code404_Z()  throws IOException, InterruptedException {
+    void subtasksGetSubtaskById_Code404()  throws IOException, InterruptedException {
         LocalDateTime start = LocalDateTime.of(2025,1,24,8,0);
         Subtask subtask = new Subtask("N-S0", "D-S0", Status.NEW, start, Duration.ofMinutes(10));
         tm.addNewSubtask(subtask);
@@ -178,7 +178,8 @@ public class HttpTaskManagerSubtasksTest {
 
         // проверяем, что задача не возвращается
         assertNotNull(response.body(), "Сообщение об ошибке не возвращается");
-        assertEquals("Subtask с идентификатором 7 не найден", response.body().toString());
+        assertEquals("Subtask с идентификатором 7 не найден", response.body());
+        //client.close();
     }
 
     @Test
@@ -240,6 +241,7 @@ public class HttpTaskManagerSubtasksTest {
         assertEquals(1, subtasksFromManager.size(), "Некорректное количество задач");
         assertEquals("N-S0", subtasksFromManager.get(0).getName(), "Некорректное имя задачи");
         assertEquals("Subtask пересекает задачу, действие addNewSubtask() прервано!", response.body());
+        //client.close();
     }
 
     @Test
@@ -280,10 +282,11 @@ public class HttpTaskManagerSubtasksTest {
         assertEquals("N-S1 update", subtasksFromManager.get(0).getName(), "Некорректное имя задачи");
         assertEquals("PT20M", subtasksFromManager.get(0).getDuration().toString(),
                 "Некорректное значение duration");
+        //client.close();
     }
 
     @Test
-    void subtasksPostUpdateSubtaskCode406_Z()  throws IOException, InterruptedException {
+    void subtasksPostUpdateSubtaskCode406()  throws IOException, InterruptedException {
         LocalDateTime start = LocalDateTime.of(2025,1,24,8,0);
         int epicId = tm.addNewEpic(new Epic("N-E0","D-E0"));
         Subtask subtask = new Subtask("N-S1", "D-S1", Status.NEW, start, Duration.ofMinutes(10));
@@ -294,9 +297,10 @@ public class HttpTaskManagerSubtasksTest {
         int idSubtask = tm.addNewSubtask(subtask);
 
         assertEquals(2, tm.getListSubtask().size(), "Некорректное количество задач");
-        assertEquals("N-S2", tm.getListSubtask().get(0).getName(), "Некорректное имя задачи");
-        assertEquals("PT10M", tm.getListSubtask().get(0).getStartTime(),
+        assertEquals("N-S1", tm.getListSubtask().get(0).getName(), "Некорректное имя задачи");
+        assertEquals("2025-01-24T08:00", tm.getListSubtask().get(0).getStartTime().toString(),
                 "Некорректное значение начало задачи");
+        assertEquals("N-S2", tm.getListSubtask().get(1).getName(), "Некорректное имя задачи");
         // конвертируем её в JSON
         subtask = new Subtask("N-S2 update", "D-S2", idSubtask,Status.NEW,epicId,
                 start.plusMinutes(5), Duration.ofMinutes(10));
@@ -311,17 +315,17 @@ public class HttpTaskManagerSubtasksTest {
         // вызываем рест, отвечающий за создание задач
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
-        assertEquals(201, response.statusCode());
+        assertEquals(406, response.statusCode());
 
         // проверяем, что обновилась одна задача
-        assertEquals("Subtask c id = 1 обновлен", response.body());
         List<Subtask> subtasksFromManager = tm.getListSubtask();
         assertNotNull(subtasksFromManager, "Задачи не возвращаются");
-        assertEquals(1, subtasksFromManager.size(), "Некорректное количество задач");
-        assertEquals(1, subtasksFromManager.get(0).getId(), "Некорректное значение id");
-        assertEquals("N-S1 update", subtasksFromManager.get(0).getName(), "Некорректное имя задачи");
-        assertEquals("PT20M", subtasksFromManager.get(0).getDuration().toString(),
+        assertEquals(2, subtasksFromManager.size(), "Некорректное количество задач");
+        assertEquals(2, subtasksFromManager.get(1).getId(), "Некорректное значение id");
+        assertEquals("N-S2", subtasksFromManager.get(1).getName(), "Некорректное имя задачи");
+        assertEquals("2025-01-24T08:20", subtasksFromManager.get(1).getStartTime().toString(),
                 "Некорректное значение duration");
+        assertEquals("Subtask пересекает задачу, действие updateSubtask() прервано!", response.body());
     }
 
     @Test
