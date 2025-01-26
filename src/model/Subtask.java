@@ -86,4 +86,14 @@ public class Subtask extends Task {
         subtask.setDuration(this.getDuration());
         return subtask;
     }
+
+    public void copySubtask(Subtask s) {
+        this.setName(s.getName());
+        this.setDescription(s.getDescription());
+        this.setEpicId(s.getEpicId());
+        this.setStatus(s.getStatus());
+        this.setId(s.getId());
+        this.setStartTime(s.getStartTime());
+        this.setDuration(s.getDuration());
+    }
 }

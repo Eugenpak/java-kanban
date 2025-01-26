@@ -1,5 +1,6 @@
 package controllers;
 
+import exceptions.IntersectionException;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -143,9 +144,17 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean updateTask(Task task) {
         if (task != null) {
             Task copyTask = copyTask(task);
-            mapTask.put(copyTask.getId(), copyTask);
-            treeTask.remove(task);
-            validTaskInTreeSet(copyTask);
+            Task oldTask = copyTask(mapTask.get(task.getId()));// 2025-01-24 mody
+            try {
+                validTaskInTreeSet(copyTask);
+                mapTask.put(copyTask.getId(), copyTask);
+                //treeTask.remove(oldTask);
+                //treeTask.remove(task);
+            } catch (IntersectionException e) {
+                System.out.println(e.getMessage() + "-> действие updateTask() прервано!");
+                return false;
+            }
+
             return true;
         }
         return false;
@@ -181,16 +190,60 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean updateSubtask(Subtask subtask) {
         if (subtask != null) {
             final Subtask newSubtask = new Subtask(subtask);
-            mapSubtask.put(newSubtask.getId(),newSubtask);
-            final int idEpic = newSubtask.getEpicId();
-            Epic epic = mapEpic.get(idEpic);
-            if (epic != null) {
-                epic.updateStatus();
+            final Subtask oldSubtask = mapSubtask.get(subtask.getId());
+            try {
+                validTaskInTreeSet(newSubtask);
+                mapSubtask.put(newSubtask.getId(),newSubtask);
+                updateEpicId(oldSubtask,newSubtask);
+                /*
+                final int idEpic = newSubtask.getEpicId();
+                Epic epic = mapEpic.get(idEpic);
+                if (epic != null) {
+                    for (Subtask el : epic.getArraySubtask()) {
+                        if (el.getId() == newSubtask.getId()) {
+                            el.copySubtask(new Subtask(subtask));
+                        }
+                    }
+                    epic.updateStatus();
+                }
+                */
+                return true;
+            } catch (IntersectionException e) {
+                System.out.println(e.getMessage() + "-> действие updateSubtask() прервано!");
             }
-            validTaskInTreeSet(newSubtask);
-            return true;
         }
         return false;
+    }
+
+    private void updateEpicId(Subtask oldSubtask, Subtask newSubtask) {
+        if (oldSubtask != null && oldSubtask.getEpicId() == newSubtask.getEpicId()) {
+            Epic epic = mapEpic.get(oldSubtask.getEpicId());
+            if (epic != null) {
+                for (Subtask el : epic.getArraySubtask()) {
+                    if (el.getId() == newSubtask.getId()) {
+                        el.copySubtask(new Subtask(newSubtask));
+                    }
+                }
+                epic.updateStatus();
+            }
+        } else {
+            //Epic oldEpic = mapEpic.get(oldSubtask.getEpicId());
+            if (oldSubtask != null) {
+                Epic oldEpic = mapEpic.get(oldSubtask.getEpicId());
+                ArrayList<Subtask> subtaskList = oldEpic.getArraySubtask();
+                for (int i = 0; i < subtaskList.size(); i++) {
+                    if (subtaskList.get(i).getId() == oldSubtask.getId()) {
+                        subtaskList.remove(i);
+                    }
+                }
+                oldEpic.updateStatus();
+            }
+            Epic newEpic = mapEpic.get(newSubtask.getEpicId());
+            if (newEpic != null) {
+                newEpic.getArraySubtask().add(newSubtask);
+                newEpic.updateStatus();
+            }
+        }
     }
 
     @Override
@@ -202,28 +255,55 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             id = task.getId();
         }
-        mapTask.put(id, task);
-        historyManager.add(task);
-        validTaskInTreeSet(task);
+        try {
+            validTaskInTreeSet(task);
+            mapTask.put(id, task);
+            historyManager.add(task);
+        } catch (IntersectionException e) {
+            System.out.println(e.getMessage() + "-> действие addNewTask() прервано!");
+        }
         return id;
     }
 
-    private void validTaskInTreeSet(Task task) {
+    private void validTaskInTreeSet(Task task) throws IntersectionException {
         if (task.getStartTime() != null) {
-            if (treeTask.contains(task)) {
-                treeTask.remove(task);
+            final Task oldTask;
+            if (task instanceof Subtask) {
+                oldTask = mapSubtask.get(task.getId());
+            } else {
+                oldTask = mapTask.get(task.getId());
             }
-            Optional<Task> taskOptional = treeTask.stream()
-                .filter(t -> checkIntersects(task,t))
-                .findFirst();
-            taskOptional.ifPresentOrElse(x ->
-                        System.out.println("      " + task.getClass().getName().substring(6) + " '" +
-                            task.getName() + "'(id=" + task.getId() + ")[" + task.getStartTime() + " -> " +
-                            task.getStartTime().plus(task.getDuration()) + "]" + " пересекает " +
-                            x.getClass().getName().substring(6) + " '" + x.getName() +
-                            "'(id=" + x.getId() + ")[" + x.getStartTime() + " -> " +
-                            x.getStartTime().plus(x.getDuration()) + "]"),
-                        () -> treeTask.add(task));
+            //try {
+
+            if (oldTask != null) treeTask.remove(oldTask);
+            Optional<Task> taskOptional = treeTask.stream().filter(t -> checkIntersects(task,t)).findFirst();
+            final Task taskStream;
+            if (taskOptional.isPresent()) {
+                taskStream = taskOptional.get();
+                String message = task.getClass().getName().substring(6) + " '" +
+                    task.getName() + "'(id=" + task.getId() + ")[" + task.getStartTime() + " -> " +
+                    task.getStartTime().plus(task.getDuration()) + "]" + " пересекает " +
+                    taskStream.getClass().getName().substring(6) + " '" + taskStream.getName() +
+                    "'(id=" + taskStream.getId() + ")[" + taskStream.getStartTime() + " -> " +
+                    taskStream.getStartTime().plus(taskStream.getDuration()) + "],\n";
+                if (oldTask != null) treeTask.add(validTaskCopy(oldTask));
+            throw new IntersectionException(message);
+            }
+            if (task != null) treeTask.add(validTaskCopy(task));
+
+                /*
+            } catch (IntersectionException e) {
+                System.out.println(e.getMessage());
+            } */
+        }
+    }
+
+    private Task validTaskCopy(Task task) {
+        final Task oldTask;
+        if (task instanceof Subtask) {
+            return oldTask = new Subtask((Subtask) task);
+        } else {
+            return oldTask = new Task(task);
         }
     }
 
@@ -295,14 +375,18 @@ public class InMemoryTaskManager implements TaskManager {
             id = subtask.getId();
         }
         subtask.setId(id);
-        mapSubtask.put(id,subtask);
-        historyManager.add(subtask);
-        final int epicId = subtask.getEpicId();
-        Epic epic = mapEpic.get(epicId);
-        if (epic != null) {
-            setEpicSubtask(epicId,id);
+        try {
+            validTaskInTreeSet(subtask);
+            mapSubtask.put(id,subtask);
+            historyManager.add(subtask);
+            final int epicId = subtask.getEpicId();
+            Epic epic = mapEpic.get(epicId);
+            if (epic != null) {
+                setEpicSubtask(epicId,id);
+            }
+        } catch (IntersectionException e) {
+            System.out.println(e.getMessage() + "-> действие addNewSubtask() прервано!");
         }
-        validTaskInTreeSet(subtask);
         return id;
     }
 
@@ -321,7 +405,10 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = getEpicById(id);
         if (epic != null) {
             epic.getArraySubtask().forEach(elem -> {
-                mapSubtask.remove(elem.getId());historyManager.remove(elem.getId()); });
+                mapSubtask.remove(elem.getId());
+                historyManager.remove(elem.getId());
+                treeTask.remove(elem);
+            });
             mapEpic.remove(id);
             historyManager.remove(id);
         }
