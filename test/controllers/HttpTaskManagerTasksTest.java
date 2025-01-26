@@ -191,7 +191,7 @@ class HttpTaskManagerTasksTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         assertEquals(200, response.statusCode());
-        List<Task> list= gson.fromJson(response.body(),  new TaskListTypeToken().getType());
+        List<Task> list= gson.fromJson(response.body(),new TaskListTypeToken().getType());
         // проверяем, что создалась одна задача с корректным именем
 
         assertNotNull(list, "Задачи не возвращаются");
