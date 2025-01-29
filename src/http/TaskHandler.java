@@ -22,9 +22,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     public TaskHandler(TaskManager tm) {
         this.tm = tm;
     }
-    private Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Task.class, new TaskConverter())
-            .create();
+    private Gson gson = new GsonBuilder().registerTypeAdapter(Task.class, new TaskConverter()).create();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -57,7 +55,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         String responseString;
         if (idOpt.isEmpty()) { // Проверка корректности идентификатор
             //rCode = 404;
-            responseString = "Некорректный идентификатор id = "+ splitStrings[2];
+            responseString = "Некорректный идентификатор id = " + splitStrings[2];
             sendNotFound(exchange,responseString);
         } else {
             Integer taskId = idOpt.get();
