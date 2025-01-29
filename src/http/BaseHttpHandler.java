@@ -57,7 +57,7 @@ public class BaseHttpHandler {
         }
     }
 
-    enum Endpoint {GET, GET_ID, POST, DELETE, UNKNOWN}
+    enum Endpoint { GET, GET_ID, POST, DELETE, UNKNOWN }
 }
 
 
