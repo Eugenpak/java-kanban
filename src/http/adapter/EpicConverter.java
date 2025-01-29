@@ -41,6 +41,7 @@ public class EpicConverter implements JsonSerializer<Epic>, JsonDeserializer<Epi
                             JsonDeserializationContext context) throws JsonParseException {
         JsonObject object = json.getAsJsonObject();
 
+
         String name = new String(object.get("name").getAsString());
         String description = new String(object.get("description").getAsString());
         if (object.get("id") != null) {
@@ -55,10 +56,15 @@ public class EpicConverter implements JsonSerializer<Epic>, JsonDeserializer<Epi
                 Subtask sub = new SubtaskConverter().deserialize(el,type,context);
                 subtaskArray.add(sub);
             }
-
             int id = object.get("id").getAsInt();
-            //int epicId = object.get("epicId").getAsInt();
-            return new Epic(name,description,id,subtaskArray);
+            Epic epic = new Epic(name,description,id,subtaskArray);
+            if (object.size() == 9) {
+                epic.setStartTime(startTime);
+                epic.setDuration(duration);
+                epic.setEndTime(endTime);
+                epic.setStatus(status);
+            }
+            return epic;
         }
         Epic epicNew = new Epic(name,description,Status.NEW);
         epicNew.setArraySubtask(new ArrayList<>());

@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import http.adapter.TaskConverter;
+import model.Epic;
+import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,12 +97,30 @@ class HttpTaskManagerTasksTest {
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
         assertEquals("N-T0", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
-
     }
 
     @Test
-    void tasksPostAddNewTaskException_Z()  throws IOException, InterruptedException {
+    void tasksPostAddNewTaskException()  throws IOException, InterruptedException {
+        String taskJson = "{\"type\":\"TASK\",\"name\":\"N-T0\",\"description\":\"D-T0\"," +
+                "\"status\":\"NEW\"}";
 
+        // создаём HTTP-клиент и запрос
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks");
+        HttpRequest request = HttpRequest.newBuilder().uri(url)
+                .POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+
+        // вызываем рест, отвечающий за создание задач
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        // проверяем код ответа
+        assertEquals(500, response.statusCode());
+
+        // проверяем, что создалась одна задача с корректным именем
+        List<Task> tasksFromManager = tm.getListTask();
+
+        assertNotNull(tasksFromManager, "Задачи не возвращаются");
+        assertEquals(0, tasksFromManager.size(), "Некорректное количество задач");
+        assertEquals("Произошла ошибка при обработке запроса", response.body());
     }
 
     @Test
@@ -168,8 +188,32 @@ class HttpTaskManagerTasksTest {
     }
 
     @Test
-    void tasksPostUpdateTaskException_Z()  throws IOException, InterruptedException {
+    void tasksPostUpdateTaskException()  throws IOException, InterruptedException {
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Task task = new Task("N-T0", "D-T0",Status.NEW, start, Duration.ofMinutes(10));
+        tm.addNewTask(task);
+        // конвертируем её в JSON
+        String taskJson = "{\"type\":\"TASK\",\"id\":0,\"name\":\"N-T0 ++\",\"description\":\"D-T0\"}";
 
+        // создаём HTTP-клиент и запрос
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks");
+        HttpRequest request = HttpRequest.newBuilder().uri(url)
+                .POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+
+        // вызываем рест, отвечающий за создание задач
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        // проверяем код ответа
+        assertEquals(500, response.statusCode());
+
+        // проверяем, что создалась одна задача с корректным именем
+        List<Task> tasksFromManager = tm.getListTask();
+
+        assertNotNull(tasksFromManager, "Задачи не возвращаются");
+        assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
+        assertEquals("N-T0", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertEquals(0, tasksFromManager.get(0).getId(), "Некорректное значение id");
+        assertEquals("Произошла ошибка при обработке запроса", response.body());
     }
 
     @Test
@@ -181,7 +225,7 @@ class HttpTaskManagerTasksTest {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Task.class, new TaskConverter())
                 .create();
-        String taskJson = gson.toJson(task);
+
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks");
@@ -208,7 +252,7 @@ class HttpTaskManagerTasksTest {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Task.class, new TaskConverter())
                 .create();
-        String taskJson = gson.toJson(task);
+
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/0");
@@ -232,10 +276,7 @@ class HttpTaskManagerTasksTest {
                 Status.NEW, LocalDateTime.now(), Duration.ofMinutes(5));
         tm.addNewTask(task);
         // конвертируем её в JSON
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Task.class, new TaskConverter())
-                .create();
-        String taskJson = gson.toJson(task);
+
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/7");
@@ -253,11 +294,7 @@ class HttpTaskManagerTasksTest {
         Task task = new Task("N-T0", "D-T0",
                 Status.NEW, LocalDateTime.now(), Duration.ofMinutes(5));
         tm.addNewTask(task);
-        // конвертируем её в JSON
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Task.class, new TaskConverter())
-                .create();
-        String taskJson = gson.toJson(task);
+
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/aaa");
@@ -271,8 +308,20 @@ class HttpTaskManagerTasksTest {
     }
 
     @Test
-    void tasksGetTaskByIdException_Z()  throws IOException, InterruptedException {
+    void tasksGetTaskByIdException()  throws IOException, InterruptedException {
+        Task task = new Task("N-T0", "D-T0",Status.NEW);
+        tm.addNewTask(task);
 
+        // создаём HTTP-клиент и запрос
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/tasks/0");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+
+        // вызываем рест, отвечающий за создание задач
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        // проверяем код ответа
+        assertEquals(500, response.statusCode());
+        assertEquals("Произошла ошибка при обработке запроса", response.body());
     }
 
     @Test

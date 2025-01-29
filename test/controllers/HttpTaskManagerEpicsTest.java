@@ -108,9 +108,6 @@ public class HttpTaskManagerEpicsTest {
     }
 
     @Test
-    void epicsDeleteEpicByIdException_Z()  throws IOException, InterruptedException {}
-
-    @Test
     void epicsGetListEpicCode200()  throws IOException, InterruptedException {
         LocalDateTime start = LocalDateTime.of(2025,1,24,8,0);
         int epicId = tm.addNewEpic(new Epic("N-E0","D-E0"));
@@ -140,7 +137,7 @@ public class HttpTaskManagerEpicsTest {
     }
 
     @Test
-    void epicsGetEpicByIdCode200_Z()  throws IOException, InterruptedException {
+    void epicsGetEpicByIdCode200()  throws IOException, InterruptedException {
         LocalDateTime start = LocalDateTime.of(2025,1,24,8,0);
         int epicId = tm.addNewEpic(new Epic("N-E0","D-E0"));
         Subtask subtask = new Subtask("N-S1", "D-S1", Status.NEW, start, Duration.ofMinutes(10));
@@ -198,7 +195,21 @@ public class HttpTaskManagerEpicsTest {
     }
 
     @Test
-    void epicsGetEpicById_Exception_Z()  throws IOException, InterruptedException {}
+    void epicsGetEpicByIdException()  throws IOException, InterruptedException {
+        Epic epic = new Epic();
+        tm.addNewEpic(epic);
+
+        // создаём HTTP-клиент и запрос
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/epics/0");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+
+        // вызываем рест, отвечающий за создание задач
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        // проверяем код ответа
+        assertEquals(500, response.statusCode());
+        assertEquals("Произошла ошибка при обработке запроса", response.body());
+    }
 
     @Test
     void epicsGetEpicByIdSubtasksCode200()  throws IOException, InterruptedException {
@@ -287,7 +298,7 @@ public class HttpTaskManagerEpicsTest {
     }
 
     @Test
-    void epicsPostAddNewEpicCode410_Z()  throws IOException, InterruptedException {
+    void epicsPostAddNewEpicCode410()  throws IOException, InterruptedException {
         LocalDateTime start = LocalDateTime.of(2025,1,24,8,0);
         Epic epic = new Epic("N-E0","D-E0");
 
@@ -315,7 +326,28 @@ public class HttpTaskManagerEpicsTest {
     }
 
     @Test
-    void epicsPostAddNewEpicException_Z()  throws IOException, InterruptedException {}
+    void epicsPostAddNewEpicException()  throws IOException, InterruptedException {
+        String taskJson = "{\"type\":\"EPIC\",\"description\":\"D-E0\"," +
+                "\"status\":\"NEW\"}";
+
+        // создаём HTTP-клиент и запрос
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/epics");
+        HttpRequest request = HttpRequest.newBuilder().uri(url)
+                .POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+
+        // вызываем рест, отвечающий за создание задач
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        // проверяем код ответа
+        assertEquals(500, response.statusCode());
+
+        // проверяем, что создалась одна задача с корректным именем
+        List<Epic> epicsFromManager = tm.getListEpic();
+
+        assertNotNull(epicsFromManager, "Задачи не возвращаются");
+        assertEquals(0, epicsFromManager.size(), "Некорректное количество задач");
+        assertEquals("Произошла ошибка при обработке запроса", response.body());
+    }
 
     @Test
     void epicsPostUpdateEpicCode201()  throws IOException, InterruptedException {
@@ -383,7 +415,36 @@ public class HttpTaskManagerEpicsTest {
     }
 
     @Test
-    void epicsPostUpdateEpicException_Z()  throws IOException, InterruptedException {}
+    void epicsPostUpdateEpicException()  throws IOException, InterruptedException {
+        LocalDateTime start = LocalDateTime.of(2024,10,10,8,0,0);
+        Epic epic = new Epic("N-E0", "D-E)");
+        int epicId = tm.addNewEpic(epic);
+        Subtask subtask = new Subtask("N-S1", "D-S1",Status.NEW, start, Duration.ofMinutes(10));
+        subtask.setEpicId(epicId);
+        tm.addNewSubtask(subtask);
+        // конвертируем её в JSON
+        String taskJson = "{\"type\":\"EPIC\",\"id\":0,\"name\":\"N-E0 ++\"}";
+
+        // создаём HTTP-клиент и запрос
+        HttpClient client = HttpClient.newHttpClient();
+        URI url = URI.create("http://localhost:8080/epics");
+        HttpRequest request = HttpRequest.newBuilder().uri(url)
+                .POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
+
+        // вызываем рест, отвечающий за создание задач
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        // проверяем код ответа
+        assertEquals(500, response.statusCode());
+
+        // проверяем, что создалась одна задача с корректным именем
+        List<Epic> epicsFromManager = tm.getListEpic();
+
+        assertNotNull(epicsFromManager, "Задачи не возвращаются");
+        assertEquals(1, epicsFromManager.size(), "Некорректное количество задач");
+        assertEquals("N-E0",epicsFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertEquals(0, epicsFromManager.get(0).getId(), "Некорректное значение id");
+        assertEquals("Произошла ошибка при обработке запроса", response.body());
+    }
     //--------------------------------------------------------------------
     class EpicListTypeToken extends TypeToken<List<Epic>> {
     }

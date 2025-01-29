@@ -6,7 +6,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import controllers.TaskManager;
 import http.adapter.EpicConverter;
-import http.adapter.LocalDateTimeAdapter;
 import http.adapter.SubtaskConverter;
 import http.adapter.TaskConverter;
 import model.Epic;
@@ -18,6 +17,11 @@ import java.util.List;
 
 public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
     private TaskManager tm;
+    private Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Task.class, new TaskConverter())
+            .registerTypeAdapter(Subtask.class, new SubtaskConverter())
+            .registerTypeAdapter(Epic.class, new EpicConverter())
+            .create();
 
     public HistoryHandler(TaskManager tm) {
         this.tm = tm;
@@ -28,30 +32,14 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
         Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
 
         switch (endpoint) {
-            case GET -> {
-                handleGet(exchange);
-                break;
-            }
+            case GET -> handleGet(exchange);
             default -> writeResponse(exchange, "Такого эндпоинта не существует", 404);
         }
     }
 
     private void handleGet(HttpExchange exchange) throws IOException {
-        // адаптер для преобразования типа LocalTime в String в формате субтитров
-        LocalDateTimeAdapter localDateTimeAdapter = new LocalDateTimeAdapter();
-        // реализуйте обработку запроса на добавление комментария
-
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Task.class, new TaskConverter())
-                .registerTypeAdapter(Subtask.class, new SubtaskConverter())
-                .registerTypeAdapter(Epic.class, new EpicConverter())
-                .create();
-        // извлеките идентификатор поста и обработайте исключительные ситуации
-        String[] splitStrings = exchange.getRequestURI().getPath().split("/");
-
-        int rCode = 200;
         List<Task> list = tm.getHistory();
         String responseString = gson.toJson(list);
-        writeResponse(exchange, responseString, rCode);
+        sendText(exchange,responseString);
     }
 }

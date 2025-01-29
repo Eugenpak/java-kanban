@@ -2,6 +2,8 @@ package controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import http.adapter.EpicConverter;
 import http.adapter.SubtaskConverter;
@@ -21,6 +23,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,7 +66,7 @@ public class HttpTaskManagerPrioritizedTest {
                 .registerTypeAdapter(Subtask.class, new SubtaskConverter())
                 .registerTypeAdapter(Epic.class, new EpicConverter())
                 .create();
-        String taskJson = gson.toJson(task);
+
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/prioritized");
@@ -73,9 +76,17 @@ public class HttpTaskManagerPrioritizedTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         // проверяем код ответа
         assertEquals(200, response.statusCode());
-        List<Task> list= gson.fromJson(response.body(),new TaskListTypeToken().getType());
-        // проверяем, что создалась одна задача с корректным именем
 
+        List<Task> list = new ArrayList<>();
+        JsonArray array = gson.fromJson(response.body(), JsonArray.class);
+        for(JsonElement element : array) {
+            String taskType = element.getAsJsonObject().get("type").getAsString();
+            if (taskType.equals("TASK")) list.add(gson.fromJson(element, Task.class));
+            if (taskType.equals("EPIC")) list.add(gson.fromJson(element, Epic.class));
+            if (taskType.equals("SUBTASK")) list.add(gson.fromJson(element, Subtask.class));
+        }
+
+        // проверяем, что создание списка задач
         assertNotNull(list, "Задачи не возвращаются");
         assertEquals(3, list.size(), "Некорректное количество задач");
         assertEquals("N-S3", list.get(0).getName(), "Некорректное имя задачи");

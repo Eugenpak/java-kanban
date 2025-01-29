@@ -12,6 +12,10 @@ public class BaseHttpHandler {
         writeResponse(h,text,200);
     }
 
+    protected void sendCreated(HttpExchange h, String text) throws IOException {
+        writeResponse(h,text,201);
+    }
+
     protected void sendNotFound(HttpExchange h, String text) throws IOException {
         writeResponse(h,text,404);
     }

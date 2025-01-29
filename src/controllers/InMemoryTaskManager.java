@@ -195,18 +195,6 @@ public class InMemoryTaskManager implements TaskManager {
                 validTaskInTreeSet(newSubtask);
                 mapSubtask.put(newSubtask.getId(),newSubtask);
                 updateEpicId(oldSubtask,newSubtask);
-                /*
-                final int idEpic = newSubtask.getEpicId();
-                Epic epic = mapEpic.get(idEpic);
-                if (epic != null) {
-                    for (Subtask el : epic.getArraySubtask()) {
-                        if (el.getId() == newSubtask.getId()) {
-                            el.copySubtask(new Subtask(subtask));
-                        }
-                    }
-                    epic.updateStatus();
-                }
-                */
                 return true;
             } catch (IntersectionException e) {
                 System.out.println(e.getMessage() + "-> действие updateSubtask() прервано!");
@@ -290,20 +278,14 @@ public class InMemoryTaskManager implements TaskManager {
             throw new IntersectionException(message);
             }
             if (task != null) treeTask.add(validTaskCopy(task));
-
-                /*
-            } catch (IntersectionException e) {
-                System.out.println(e.getMessage());
-            } */
         }
     }
 
     private Task validTaskCopy(Task task) {
-        final Task oldTask;
         if (task instanceof Subtask) {
-            return oldTask = new Subtask((Subtask) task);
+            return new Subtask((Subtask) task);
         } else {
-            return oldTask = new Task(task);
+            return new Task(task);
         }
     }
 
