@@ -55,6 +55,7 @@ public class Epic extends Task {
         super(name, description, id,Status.NEW);
         this.setArraySubtask(arraySubtask);
     }
+
     public Epic(String name, String description, Status status) {
         super(name, description,status);
     }
