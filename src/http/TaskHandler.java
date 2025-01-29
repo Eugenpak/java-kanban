@@ -22,6 +22,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     public TaskHandler(TaskManager tm) {
         this.tm = tm;
     }
+
     private Gson gson = new GsonBuilder().registerTypeAdapter(Task.class, new TaskConverter()).create();
 
     @Override
