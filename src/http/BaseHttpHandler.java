@@ -1,13 +1,48 @@
 package http;
 
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-public class BaseHttpHandler {
+public class BaseHttpHandler implements HttpHandler {
+
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
+        Endpoint endpoint = getEndpoint(exchange.getRequestMethod());
+        try {
+            switch (endpoint) {
+                case GET -> handleGet(exchange);
+                case POST -> handlePost(exchange);
+                case DELETE -> handleDelete(exchange);
+                default -> writeResponse(exchange, "Такого ресурса не существует", 404);
+            }
+        } catch (NullPointerException e) {
+            System.out.println(e.getMessage() + " NullPointerException ()");
+            e.printStackTrace(System.out);
+            writeResponse(exchange, "Произошла ошибка при обработке запроса", 500);
+        }
+    }
+
+    protected void handleGet(HttpExchange exchange) throws IOException {
+        sendMethodNotAllowed(exchange,"Метод запроса GET не поддерживается");
+    }
+
+    protected void handleGetId(HttpExchange exchange) throws IOException, NullPointerException {
+        sendMethodNotAllowed(exchange,"Метод запроса GET не поддерживается");
+    }
+
+    protected void handlePost(HttpExchange exchange) throws IOException, NullPointerException {
+        sendMethodNotAllowed(exchange,"Метод запроса POST не поддерживается");
+    }
+
+    protected void handleDelete(HttpExchange exchange) throws IOException {
+        sendMethodNotAllowed(exchange,"Метод запроса DELETE не поддерживается");
+    }
+
     protected void sendText(HttpExchange h, String text) throws IOException {
         writeResponse(h,text,200);
     }
@@ -20,19 +55,17 @@ public class BaseHttpHandler {
         writeResponse(h,text,404);
     }
 
+    protected void sendMethodNotAllowed(HttpExchange h, String text) throws IOException {
+        writeResponse(h,text,405);
+    }
+
     protected void sendHasInteractions(HttpExchange h, String text) throws IOException {
         writeResponse(h,text,406);
     }
 
-    protected Endpoint getEndpoint(String requestPath, String requestMethod) {
-        String[] pathParts = requestPath.split("/");
-
-        if (requestMethod.equals("GET")) {
-            if (pathParts.length == 2) return Endpoint.GET;
-            else if (pathParts.length == 3) return Endpoint.GET_ID;
-            else if (pathParts.length == 4 & pathParts[3].equals("subtasks")) return Endpoint.GET_ID;
-        }
-        if (requestMethod.equals("POST") & pathParts.length == 2) return Endpoint.POST;
+    protected Endpoint getEndpoint(String requestMethod) {
+        if (requestMethod.equals("GET")) return Endpoint.GET;
+        if (requestMethod.equals("POST")) return Endpoint.POST;
         if (requestMethod.equals("DELETE")) return Endpoint.DELETE;
         return Endpoint.UNKNOWN;
     }
@@ -57,7 +90,7 @@ public class BaseHttpHandler {
         }
     }
 
-    enum Endpoint { GET, GET_ID, POST, DELETE, UNKNOWN }
+    enum Endpoint { GET, POST, DELETE, UNKNOWN }
 }
 
 
