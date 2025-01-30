@@ -98,11 +98,11 @@ public class Epic extends Task {
     }
 
     public Status updateStatus() {
+        updateLocalDateTime();
         if (arraySubtask.size() == 0) {
             super.setStatus(Status.NEW);
             return getStatus();
         }
-        updateLocalDateTime();
         Status temp = Status.NEW;
         for (Subtask subtask : arraySubtask) {
             if (!(subtask.getStatus() == Status.NEW)) {
@@ -145,6 +145,9 @@ public class Epic extends Task {
             setStartTime(result.get(0).getStartTime());
             setEndTime(result.get(result.size() - 1).getEndTime());
             setDuration(Duration.between(getStartTime(),getEndTime()));
+        } else {
+            setEndTime(getStartTime());
+            setDuration(Duration.ZERO);
         }
     }
 }

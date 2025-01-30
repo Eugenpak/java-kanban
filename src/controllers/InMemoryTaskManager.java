@@ -195,6 +195,7 @@ public class InMemoryTaskManager implements TaskManager {
                 validTaskInTreeSet(newSubtask);
                 mapSubtask.put(newSubtask.getId(),newSubtask);
                 updateEpicId(oldSubtask,newSubtask);
+                historyManager.add(newSubtask);
                 return true;
             } catch (IntersectionException e) {
                 System.out.println(e.getMessage() + "-> действие updateSubtask() прервано!");
@@ -214,10 +215,9 @@ public class InMemoryTaskManager implements TaskManager {
                 }
                 epic.updateStatus();
             }
-        } else {
-            //Epic oldEpic = mapEpic.get(oldSubtask.getEpicId());
-            if (oldSubtask != null) {
-                Epic oldEpic = mapEpic.get(oldSubtask.getEpicId());
+        } else if (oldSubtask != null && oldSubtask.getEpicId() != newSubtask.getEpicId()) {
+            Epic oldEpic = mapEpic.get(oldSubtask.getEpicId());
+            if (oldEpic != null) {
                 ArrayList<Subtask> subtaskList = oldEpic.getArraySubtask();
                 for (int i = 0; i < subtaskList.size(); i++) {
                     if (subtaskList.get(i).getId() == oldSubtask.getId()) {
@@ -226,11 +226,12 @@ public class InMemoryTaskManager implements TaskManager {
                 }
                 oldEpic.updateStatus();
             }
-            Epic newEpic = mapEpic.get(newSubtask.getEpicId());
-            if (newEpic != null) {
-                newEpic.getArraySubtask().add(newSubtask);
-                newEpic.updateStatus();
-            }
+
+        }
+        Epic newEpic = mapEpic.get(newSubtask.getEpicId());
+        if (newEpic != null) {
+            newEpic.getArraySubtask().add(newSubtask);
+            newEpic.updateStatus();
         }
     }
 
