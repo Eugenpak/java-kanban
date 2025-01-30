@@ -1,5 +1,10 @@
 package controllers;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import http.adapter.EpicConverter;
+import http.adapter.SubtaskConverter;
+import http.adapter.TaskConverter;
 import model.Epic;
 import model.Subtask;
 import model.Task;
@@ -13,6 +18,15 @@ public final class Managers {
 
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
+    }
+
+    public static Gson getGson() {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Task.class, new TaskConverter())
+                .registerTypeAdapter(Epic.class, new EpicConverter())
+                .registerTypeAdapter(Subtask.class, new SubtaskConverter())
+                .create();
+        return gson;
     }
 
     public static void testManagers(TaskManager taskManager) {
