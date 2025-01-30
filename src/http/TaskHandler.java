@@ -1,55 +1,43 @@
 package http;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import controllers.Managers;
 import controllers.TaskManager;
-import http.adapter.TaskConverter;
 import model.Task;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 
-public class TaskHandler extends BaseHttpHandler implements HttpHandler {
-    private TaskManager tm;
+public class TaskHandler extends BaseHttpHandler {
+    private final TaskManager tm;
+    private final Gson gson;
 
     public TaskHandler(TaskManager tm) {
         this.tm = tm;
+        gson = Managers.getGson();
     }
-
-    private Gson gson = new GsonBuilder().registerTypeAdapter(Task.class, new TaskConverter()).create();
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
-        try {
-            switch (endpoint) {
-                case GET -> handleGet(exchange);
-                case GET_ID -> handleGetId(exchange);
-                case POST -> handlePost(exchange);
-                case DELETE -> handleDelete(exchange);
-                default -> writeResponse(exchange, "Такого эндпоинта не существует", 404);
-            }
-        } catch (NullPointerException e) {
-            System.out.println(e.getMessage() + " NullPointerException (TaskHandler)");
-            e.printStackTrace(System.out);
-            writeResponse(exchange, "Произошла ошибка при обработке запроса", 500);
-        }
+    protected void handleGet(HttpExchange exchange) throws IOException, NullPointerException {
+        String[] splitStrings = exchange.getRequestURI().getPath().split("/");
+
+        if (splitStrings.length == 2) handleGetTask(exchange);
+        else if (splitStrings.length == 3) handleGetIdTask(exchange);
+        else writeResponse(exchange, "Такого ресурса не существует", 404);
     }
 
-    private void handleGet(HttpExchange exchange) throws IOException {
-        List<Task> list = tm.getListTask();
-        String responseString = gson.toJson(list);
+    private void handleGetTask(HttpExchange exchange) throws IOException {
+        String responseString = gson.toJson(tm.getListTask());
         sendText(exchange,responseString);
     }
 
-    private void handleGetId(HttpExchange exchange) throws IOException, NullPointerException {
+    private void handleGetIdTask(HttpExchange exchange) throws IOException, NullPointerException {
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
         Optional<Integer> idOpt = getIdOpt(splitStrings[2]);
 
@@ -74,7 +62,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handlePost(HttpExchange exchange) throws IOException, NullPointerException {
+    @Override
+    protected void handlePost(HttpExchange exchange) throws IOException, NullPointerException {
         InputStream inputStream = exchange.getRequestBody();
         String str = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -118,7 +107,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleDelete(HttpExchange exchange) throws IOException {
+    @Override
+    protected void handleDelete(HttpExchange exchange) throws IOException {
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
         Optional<Integer> idOpt = getIdOpt(splitStrings[2]);
 
