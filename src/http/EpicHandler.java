@@ -1,0 +1,141 @@
+package http;
+
+import com.google.gson.Gson;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import controllers.Managers;
+import controllers.TaskManager;
+import model.Epic;
+import model.Task;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Optional;
+
+public class EpicHandler  extends BaseHttpHandler implements HttpHandler {
+    private final TaskManager tm;
+    private final Gson gson;
+
+    public EpicHandler(TaskManager tm) {
+        this.tm = tm;
+        gson = Managers.getGson();
+    }
+
+    @Override
+    protected void handleGet(HttpExchange exchange) throws IOException, NullPointerException {
+        String[] splitStrings = exchange.getRequestURI().getPath().split("/");
+
+        if (splitStrings.length == 2) handleGetEpic(exchange);
+        else if (splitStrings.length == 3) handleGetIdEpic(exchange);
+        else if (splitStrings.length == 4 & splitStrings[3].equals("subtasks")) handleGetIdEpic(exchange);
+        else writeResponse(exchange, "Такого ресурса не существует", 404);
+    }
+
+    private void handleGetEpic(HttpExchange exchange) throws IOException {
+        //rCode = 200;
+        String responseString = gson.toJson(tm.getListEpic());
+        sendText(exchange,responseString);
+    }
+
+    private void handleGetIdEpic(HttpExchange exchange) throws IOException, NullPointerException {
+        String[] splitStrings = exchange.getRequestURI().getPath().split("/");
+        Optional<Integer> idOpt = getIdOpt(splitStrings[2]);
+
+        String responseString;
+        if (idOpt.isEmpty()) { // Проверка корректности идентификатор Epic
+            //rCode = 404;
+            responseString = "Некорректный идентификатор Epic";
+            sendNotFound(exchange,responseString);
+        } else {
+            Integer taskId = idOpt.get();
+            Optional<Epic> taskOpt = Optional.ofNullable(tm.getEpicById(taskId));
+
+            if (taskOpt.isPresent()) { // Проверка наличие Epic
+                //rCode = 200;
+                if (splitStrings.length == 4 && splitStrings[3].equals("subtasks")) {
+                    responseString = gson.toJson(taskOpt.get().getArraySubtask());
+                } else {
+                    responseString = gson.toJson(taskOpt.get());
+                }
+                sendText(exchange,responseString);
+            } else {
+                //rCode = 404;
+                responseString = "Epic с идентификатором " + taskId + " не найден";
+                sendNotFound(exchange,responseString);
+            }
+        }
+    }
+
+    @Override
+    protected void handlePost(HttpExchange exchange) throws IOException, NullPointerException {
+        InputStream inputStream = exchange.getRequestBody();
+        String str = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        Epic epic = gson.fromJson(str, Epic.class);
+
+        Optional<Integer> idTaskOpt = Optional.ofNullable(epic.getId());
+        System.out.println("Запрос POST " + Instant.now());
+
+        String responseString;
+
+        if (idTaskOpt.isEmpty() | idTaskOpt.get() == -3) { // Проверка корректности идентификатор
+            int createId = tm.addNewEpic(epic);
+            if (tm.getEpicById(createId) == null) {
+                //rCode = 410;
+                responseString = "Epic не создан, addNewEpic()";
+                writeResponse(exchange,responseString,410);
+            } else {
+                //rCode = 201;
+                responseString = "Новый Epic добавлен, id = " + createId;
+                sendCreated(exchange,responseString);
+            }
+        } else {
+            Integer taskId = idTaskOpt.get();
+            Optional<Epic> taskOpt = Optional.ofNullable(tm.getEpicById(taskId));
+
+            if (taskOpt.isPresent()) { // Проверка наличие задачи
+                if (tm.updateEpic(epic)) {
+                    //rCode = 201;
+                    responseString = "Epic c id = " + taskId + " обновлен";
+                    sendCreated(exchange,responseString);
+                } else {
+                    //rCode = 410;
+                    responseString = "Epic нет обработчика, updateEpic()";
+                    writeResponse(exchange,responseString,410);
+                }
+            } else {
+                //rCode = 404;
+                responseString = "Epic с идентификатором " + taskId + " не найден";
+                sendNotFound(exchange,responseString);
+            }
+        }
+    }
+
+    @Override
+    protected void handleDelete(HttpExchange exchange) throws IOException {
+        String[] splitStrings = exchange.getRequestURI().getPath().split("/");
+        Optional<Integer> idOpt = getIdOpt(splitStrings[2]);
+
+        String responseString;
+        if (idOpt.isEmpty()) { // Проверка корректности идентификатор
+            //rCode = 404;
+            responseString = "Некорректный идентификатор Epic";
+            sendNotFound(exchange,responseString);
+        } else {
+            Integer taskId = idOpt.get();
+            Optional<Task> taskOpt = Optional.ofNullable(tm.getEpicById(taskId));
+
+            if (taskOpt.isPresent()) { // Проверка наличие задачи
+                tm.deleteEpic(taskId);
+                //rCode = 200;
+                responseString = "Epic с идентификатором " + taskId + " удален";
+                sendText(exchange,responseString);
+            } else {
+                //rCode = 404;
+                responseString = "Epic с идентификатором " + taskId + " не найден";
+                sendNotFound(exchange,responseString);
+            }
+        }
+    }
+}
