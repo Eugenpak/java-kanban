@@ -3,11 +3,8 @@ package http;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import controllers.Managers;
 import controllers.TaskManager;
-import http.adapter.EpicConverter;
-import http.adapter.SubtaskConverter;
-import http.adapter.TaskConverter;
-import model.Epic;
 import model.Subtask;
 import model.Task;
 
@@ -15,47 +12,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
-    private TaskManager tm;
-    private Gson gson = new GsonBuilder()
-            //.registerTypeAdapter(LocalDateTime.class, localDateTimeAdapter)
-            .registerTypeAdapter(Task.class, new TaskConverter())
-            .registerTypeAdapter(Epic.class, new EpicConverter())
-            .registerTypeAdapter(Subtask.class, new SubtaskConverter())
-            .create();
+    private final TaskManager tm;
+    private final Gson gson;
 
     public SubtaskHandler(TaskManager tm) {
         this.tm = tm;
+        gson = Managers.getGson();
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
-        try {
-            switch (endpoint) {
-                case GET -> handleGet(exchange);
-                case GET_ID -> handleGetId(exchange);
-                case POST -> handlePost(exchange);
-                case DELETE -> handleDelete(exchange);
-                default -> writeResponse(exchange, "Такого эндпоинта не существует", 404);
-            }
-        } catch (NullPointerException e) {
-            System.out.println(e.getMessage() + " NullPointerException (SubtaskHandler)");
-            e.printStackTrace(System.out);
-            writeResponse(exchange, "Произошла ошибка при обработке запроса", 500);
-        }
+    protected void handleGet(HttpExchange exchange) throws IOException, NullPointerException {
+        String[] splitStrings = exchange.getRequestURI().getPath().split("/");
+
+        if (splitStrings.length == 2) handleGetSubtask(exchange);
+        else if (splitStrings.length == 3) handleGetIdSubtask(exchange);
+        else writeResponse(exchange, "Такого ресурса не существует", 404);
     }
 
-    private void handleGet(HttpExchange exchange) throws IOException {
-        List<Subtask> list = tm.getListSubtask();
-        String responseString = gson.toJson(list);
+    private void handleGetSubtask(HttpExchange exchange) throws IOException {
+        String responseString = gson.toJson(tm.getListSubtask());
         sendText(exchange,responseString);
     }
 
-    private void handleGetId(HttpExchange exchange) throws IOException, NullPointerException {
+    private void handleGetIdSubtask(HttpExchange exchange) throws IOException, NullPointerException {
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
         Optional<Integer> idOpt = getIdOpt(splitStrings[2]);
 
@@ -80,7 +62,8 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handlePost(HttpExchange exchange) throws IOException, NullPointerException {
+    @Override
+    protected void handlePost(HttpExchange exchange) throws IOException, NullPointerException {
         InputStream inputStream = exchange.getRequestBody();
         String str = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -122,7 +105,8 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void handleDelete(HttpExchange exchange) throws IOException, NullPointerException {
+    @Override
+    protected void handleDelete(HttpExchange exchange) throws IOException, NullPointerException {
         String[] splitStrings = exchange.getRequestURI().getPath().split("/");
         Optional<Integer> idOpt = getIdOpt(splitStrings[2]);
 
